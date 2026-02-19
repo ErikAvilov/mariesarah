@@ -56,7 +56,7 @@ export function BioSection({ lang }: { lang: Lang }) {
                   accompagné Seal sur six Zéniths en France.
                 </p>
                 <p className="font-semibold text-white">
-                  Son premier album « On My Way » sort le 14 mars 2026.
+                  Son premier album « On My Way » sort le 13 mars 2026.
                 </p>
               </div>
             ) : (

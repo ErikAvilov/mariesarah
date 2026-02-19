@@ -89,7 +89,7 @@ export const translations = {
         "Issue d'une maman française et d'un papa camerounais, Marie Sarah a 25 ans et a grandi la télé branchée sur les chaînes de clips. C'était comédie musicale non-stop à la maison.",
         "La révélation : Dreamgirls, le film sur Diana Ross et Les Supremes. Dès lors, les sons feutrés, les cuivres, les crooners, la soul brute des années 60 deviennent sa passion : Otis Redding, Etta James, Motown, Stax, Chess Records.",
         "Après une formation au Cours Florent en comédie musicale, Marie Sarah est repérée suite à la mise en ligne d'une reprise d'Etta James « I'd Rather Go Blind ». Depuis la sortie de son premier EP en avril 2024 (+1.4M de streams Spotify), elle est passée sur Taratata, a fait les premières parties de Boyz II Men, Gavin DeGraw, Tower of Power, et a accompagné Seal sur 6 Zénith en France.",
-        "Son premier album « On My Way » sort le 14 mars 2026.",
+        "Son premier album « On My Way » sort le 13 mars 2026.",
       ],
     },
     press: {
