@@ -68,37 +68,37 @@ export function HeaderClient() {
               href={socialLinks.spotify}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-foreground/70 transition-colors hover:text-primary"
-              aria-label="Spotify"
-            >
-              <SpotifyIcon className="h-5 w-5" />
+className="text-foreground/70 transition-colors hover:text-[#1DB954]"
+            aria-label="Spotify"
+          >
+            <SpotifyIcon className="h-5 w-5" />
             </Link>
             <Link
               href={socialLinks.apple}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-foreground/70 transition-colors hover:text-primary"
-              aria-label="Apple Music"
-            >
-              <AppleMusicIcon className="h-5 w-5" />
+className="text-foreground/70 transition-colors hover:text-[#FA243C]"
+            aria-label="Apple Music"
+          >
+            <AppleMusicIcon className="h-5 w-5" />
             </Link>
             <Link
               href={socialLinks.youtube}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-foreground/70 transition-colors hover:text-primary"
-              aria-label="YouTube"
-            >
-              <YouTubeIcon className="h-5 w-5" />
+className="text-foreground/70 transition-colors hover:text-[#FF0000]"
+            aria-label="YouTube"
+          >
+            <YouTubeIcon className="h-5 w-5" />
             </Link>
             <Link
               href={socialLinks.instagram}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-foreground/70 transition-colors hover:text-primary"
-              aria-label="Instagram"
-            >
-              <InstagramIcon className="h-5 w-5" />
+className="text-foreground/70 transition-colors hover:text-[#E4405F]"
+            aria-label="Instagram"
+          >
+            <InstagramIcon className="h-5 w-5" />
             </Link>
           </div>
 
@@ -135,7 +135,7 @@ export function HeaderClient() {
                 href={socialLinks.spotify}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-foreground/70 transition-colors hover:text-primary"
+                className="text-foreground/70 transition-colors hover:text-[#1DB954]"
               >
                 <SpotifyIcon className="h-5 w-5" />
               </Link>
@@ -143,7 +143,7 @@ export function HeaderClient() {
                 href={socialLinks.apple}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-foreground/70 transition-colors hover:text-primary"
+                className="text-foreground/70 transition-colors hover:text-[#FA243C]"
               >
                 <AppleMusicIcon className="h-5 w-5" />
               </Link>
@@ -151,7 +151,7 @@ export function HeaderClient() {
                 href={socialLinks.youtube}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-foreground/70 transition-colors hover:text-primary"
+                className="text-foreground/70 transition-colors hover:text-[#FF0000]"
               >
                 <YouTubeIcon className="h-5 w-5" />
               </Link>
@@ -159,7 +159,7 @@ export function HeaderClient() {
                 href={socialLinks.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-foreground/70 transition-colors hover:text-primary"
+                className="text-foreground/70 transition-colors hover:text-[#E4405F]"
               >
                 <InstagramIcon className="h-5 w-5" />
               </Link>

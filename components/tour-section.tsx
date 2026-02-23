@@ -62,7 +62,7 @@ export function TourSection({ lang }: { lang: Lang }) {
                 href={socialLinks.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-foreground/70 transition-colors hover:text-primary"
+                className="text-foreground/70 transition-colors hover:text-[#E4405F]"
               >
                 <InstagramIcon className="h-6 w-6" />
               </Link>
@@ -70,7 +70,7 @@ export function TourSection({ lang }: { lang: Lang }) {
                 href={socialLinks.facebook}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-foreground/70 transition-colors hover:text-primary"
+                className="text-foreground/70 transition-colors hover:text-[#1877F2]"
               >
                 <FacebookIcon className="h-6 w-6" />
               </Link>

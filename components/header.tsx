@@ -12,7 +12,7 @@ import {
   InstagramIcon,
   FacebookIcon,
 } from "@/components/Icons";
-import { socialLinks } from "@/lib/data";
+import { socialLinks, shopUrl } from "@/lib/data";
 
 export function Header() {
   const [lang, setLang] = useState<Lang>("fr");
@@ -48,6 +48,15 @@ export function Header() {
                 {link.label}
               </a>
             ))}
+            <Link
+              href={shopUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="relative px-4 py-2.5 text-sm font-medium uppercase tracking-widest border-2 border-foreground/80 text-foreground overflow-hidden transition-all duration-300 hover:border-primary hover:text-white hover:scale-[1.02] active:scale-[0.98] group"
+            >
+              <span className="relative z-10">{t.nav.shop}</span>
+              <span className="absolute inset-0 z-0 bg-primary scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300 ease-out" />
+            </Link>
           </nav>
 
           <div className="absolute left-1/2 -translate-x-1/2 lg:static lg:translate-x-0 lg:mx-auto">
@@ -64,7 +73,7 @@ export function Header() {
               href={socialLinks.spotify}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-foreground/70 transition-colors hover:text-primary"
+              className="text-foreground/70 transition-colors hover:text-[#1DB954]"
               aria-label="Spotify"
             >
               <SpotifyIcon className="h-5 w-5" />
@@ -73,7 +82,7 @@ export function Header() {
               href={socialLinks.apple}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-foreground/70 transition-colors hover:text-primary"
+              className="text-foreground/70 transition-colors hover:text-[#FA243C]"
               aria-label="Apple Music"
             >
               <AppleMusicIcon className="h-5 w-5" />
@@ -82,7 +91,7 @@ export function Header() {
               href={socialLinks.youtube}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-foreground/70 transition-colors hover:text-primary"
+              className="text-foreground/70 transition-colors hover:text-[#FF0000]"
               aria-label="YouTube"
             >
               <YouTubeIcon className="h-5 w-5" />
@@ -91,7 +100,7 @@ export function Header() {
               href={socialLinks.instagram}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-foreground/70 transition-colors hover:text-primary"
+              className="text-foreground/70 transition-colors hover:text-[#E4405F]"
               aria-label="Instagram"
             >
               <InstagramIcon className="h-5 w-5" />
@@ -100,7 +109,7 @@ export function Header() {
               href={socialLinks.deezer}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-foreground/70 transition-colors hover:text-primary"
+              className="text-foreground/70 transition-colors hover:text-[#FEAA2D]"
               aria-label="Deezer"
             >
               <DeezerIcon className="h-5 w-5" />
@@ -109,7 +118,7 @@ export function Header() {
               href={socialLinks.facebook}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-foreground/70 transition-colors hover:text-primary"
+              className="text-foreground/70 transition-colors hover:text-[#1877F2]"
               aria-label="Facebook"
             >
               <FacebookIcon className="h-5 w-5" />
@@ -144,12 +153,22 @@ export function Header() {
                 {link.label}
               </a>
             ))}
+            <Link
+              href={shopUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setMobileMenuOpen(false)}
+              className="relative mt-2 px-6 py-3 text-sm font-medium uppercase tracking-widest border-2 border-foreground/80 text-foreground overflow-hidden transition-all duration-300 hover:border-primary hover:text-white hover:scale-[1.02] active:scale-[0.98] group"
+            >
+              <span className="relative z-10">{t.nav.shop}</span>
+              <span className="absolute inset-0 z-0 bg-primary scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300 ease-out" />
+            </Link>
             <div className="flex items-center gap-4 pt-4 border-t border-border mt-2">
               <Link
                 href={socialLinks.spotify}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-foreground/70 transition-colors hover:text-primary"
+                className="text-foreground/70 transition-colors hover:text-[#1DB954]"
               >
                 <SpotifyIcon className="h-5 w-5" />
               </Link>
@@ -157,7 +176,7 @@ export function Header() {
                 href={socialLinks.apple}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-foreground/70 transition-colors hover:text-primary"
+                className="text-foreground/70 transition-colors hover:text-[#FA243C]"
               >
                 <AppleMusicIcon className="h-5 w-5" />
               </Link>
@@ -165,7 +184,7 @@ export function Header() {
                 href={socialLinks.youtube}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-foreground/70 transition-colors hover:text-primary"
+                className="text-foreground/70 transition-colors hover:text-[#FF0000]"
               >
                 <YouTubeIcon className="h-5 w-5" />
               </Link>
@@ -173,7 +192,7 @@ export function Header() {
                 href={socialLinks.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-foreground/70 transition-colors hover:text-primary"
+                className="text-foreground/70 transition-colors hover:text-[#E4405F]"
               >
                 <InstagramIcon className="h-5 w-5" />
               </Link>
@@ -181,7 +200,7 @@ export function Header() {
                 href={socialLinks.deezer}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-foreground/70 transition-colors hover:text-primary"
+                className="text-foreground/70 transition-colors hover:text-[#FEAA2D]"
               >
                 <DeezerIcon className="h-5 w-5" />
               </Link>
@@ -189,7 +208,7 @@ export function Header() {
                 href={socialLinks.facebook}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-foreground/70 transition-colors hover:text-primary"
+                className="text-foreground/70 transition-colors hover:text-[#1877F2]"
               >
                 <FacebookIcon className="h-5 w-5" />
               </Link>

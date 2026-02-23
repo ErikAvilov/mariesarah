@@ -6,6 +6,7 @@ export const translations = {
       tour: "Concerts",
       bio: "Biographie",
       contact: "Contact",
+      shop: "Shop",
     },
     hero: {
       newRelease: "Nouveau single disponible",
@@ -61,6 +62,7 @@ export const translations = {
       tour: "Tour",
       bio: "Bio",
       contact: "Contact",
+      shop: "Shop",
     },
     hero: {
       newRelease: "New Release",

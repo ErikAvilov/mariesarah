@@ -45,7 +45,7 @@ export function MusicSection({ lang }: { lang: Lang }) {
             href={socialLinks.spotify}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 px-6 py-3 rounded-full border border-border hover:border-primary hover:text-primary transition-colors"
+            className="flex items-center gap-2 px-6 py-3 rounded-full border border-border hover:border-[#1DB954] hover:text-[#1DB954] transition-colors"
           >
             <SpotifyIcon className="h-5 w-5" />
             <span className="text-sm font-medium">Spotify</span>
@@ -54,7 +54,7 @@ export function MusicSection({ lang }: { lang: Lang }) {
             href={socialLinks.apple}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 px-6 py-3 rounded-full border border-border hover:border-primary hover:text-primary transition-colors"
+            className="flex items-center gap-2 px-6 py-3 rounded-full border border-border hover:border-[#FA243C] hover:text-[#FA243C] transition-colors"
           >
             <AppleMusicIcon className="h-5 w-5" />
             <span className="text-sm font-medium">Apple Music</span>
@@ -63,7 +63,7 @@ export function MusicSection({ lang }: { lang: Lang }) {
             href={socialLinks.deezer}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 px-6 py-3 rounded-full border border-border hover:border-primary hover:text-primary transition-colors"
+            className="flex items-center gap-2 px-6 py-3 rounded-full border border-border hover:border-[#FEAA2D] hover:text-[#FEAA2D] transition-colors"
           >
             <DeezerIcon className="h-5 w-5" />
             <span className="text-sm font-medium">Deezer</span>
@@ -72,7 +72,7 @@ export function MusicSection({ lang }: { lang: Lang }) {
             href={socialLinks.youtube}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 px-6 py-3 rounded-full border border-border hover:border-primary hover:text-primary transition-colors"
+            className="flex items-center gap-2 px-6 py-3 rounded-full border border-border hover:border-[#FF0000] hover:text-[#FF0000] transition-colors"
           >
             <YouTubeIcon className="h-5 w-5" />
             <span className="text-sm font-medium">YouTube</span>
