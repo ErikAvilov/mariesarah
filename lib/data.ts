@@ -370,14 +370,6 @@ export const concerts: Concert[] = [
     isPrivate: true,
   },
   {
-    id: "concert-suzanne-vega",
-    date: "2026-03-15",
-    city: "Paris",
-    venue: "Salle Pleyel",
-    country: "France",
-    ticketUrl: "https://www.sallepleyel.com/evenement/suzanne-vega/",
-  },
-  {
     id: "concert-5",
     date: "2026-03-27",
     city: "Thaon-Les-Vosges",
