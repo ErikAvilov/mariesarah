@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Lang, translations } from "@/lib/data";
-import { concerts } from "@/lib/data";
+import { getConcerts, type ConcertRow } from "@/lib/concerts";
+import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { InstagramIcon, FacebookIcon } from "@/components/Icons";
 import { socialLinks } from "@/lib/data";
@@ -13,6 +14,19 @@ const ITEMS_PER_PAGE = 10;
 export function ConcertsSection({ lang }: { lang: Lang }) {
   const t = translations[lang];
   const [currentPage, setCurrentPage] = useState(1);
+  const [upcomingConcerts, setUpcomingConcerts] = useState<ConcertRow[]>([]);
+  const [pastConcerts, setPastConcerts] = useState<ConcertRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    getConcerts()
+      .then(({ upcoming, past }) => {
+        setUpcomingConcerts(upcoming);
+        setPastConcerts(past);
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -22,6 +36,12 @@ export function ConcertsSection({ lang }: { lang: Lang }) {
         setCurrentPage(page);
       }
     }
+  }, []);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setIsAdmin(!!session);
+    });
   }, []);
 
   const handlePageChange = (page: number) => {
@@ -34,13 +54,10 @@ export function ConcertsSection({ lang }: { lang: Lang }) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const upcomingConcerts = concerts
-    .filter((concert) => new Date(concert.date) >= today)
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-
-  const pastConcerts = concerts
-    .filter((concert) => new Date(concert.date) < today)
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  const isConcertUpcoming = (c: ConcertRow) => {
+    const eventDate = new Date(c.event_date + "T00:00:00");
+    return eventDate >= today || c.is_upcoming === true;
+  };
 
   const allConcerts = [...upcomingConcerts, ...pastConcerts];
 
@@ -48,12 +65,8 @@ export function ConcertsSection({ lang }: { lang: Lang }) {
   const startIdx = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedConcerts = allConcerts.slice(startIdx, startIdx + ITEMS_PER_PAGE);
 
-  const pageHasUpcoming = paginatedConcerts.some(
-    (concert) => new Date(concert.date) >= today
-  );
-  const pageHasPast = paginatedConcerts.some(
-    (concert) => new Date(concert.date) < today
-  );
+  const pageHasUpcoming = paginatedConcerts.some(isConcertUpcoming);
+  const pageHasPast = paginatedConcerts.some((c) => !isConcertUpcoming(c));
 
   const formatDate = (dateString: string, lang: Lang) => {
     const date = new Date(dateString + "T00:00:00");
@@ -72,10 +85,37 @@ export function ConcertsSection({ lang }: { lang: Lang }) {
     }
   };
 
+  if (loading) {
+    return (
+      <section id="tour" className="pt-8 pb-20 lg:pt-12 lg:pb-32 bg-card">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="font-bebas text-4xl sm:text-5xl font-bold uppercase text-foreground mb-4">
+              {t.tour.title}
+            </h2>
+            <div className="w-16 h-1 bg-primary mx-auto" />
+          </div>
+          <div className="text-center py-16 text-muted-foreground">
+            {t.tour.followSocials}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section id="tour" className="pt-8 pb-20 lg:pt-12 lg:pb-32 bg-card">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
+        <div className="text-center mb-16 relative">
+          {isAdmin && (
+            <Link
+              href="/admin/concerts/new"
+              className="absolute right-0 top-0 inline-flex h-9 w-9 items-center justify-center rounded-md border border-border text-foreground hover:bg-muted hover:border-muted-foreground/20 transition-colors"
+              aria-label="Ajouter un concert"
+            >
+              +
+            </Link>
+          )}
           <h2 className="font-bebas text-4xl sm:text-5xl font-bold uppercase text-foreground mb-4">
             {t.tour.title}
           </h2>
@@ -91,8 +131,7 @@ export function ConcertsSection({ lang }: { lang: Lang }) {
                 </h3>
                 <div className="space-y-4">
                   {paginatedConcerts.map((concert) => {
-                    const isUpcoming = new Date(concert.date) >= today;
-                    if (!isUpcoming) return null;
+                    if (!isConcertUpcoming(concert)) return null;
                     return (
                       <ConcertRow
                         key={concert.id}
@@ -115,8 +154,7 @@ export function ConcertsSection({ lang }: { lang: Lang }) {
                 </h3>
                 <div className="space-y-4">
                   {paginatedConcerts.map((concert) => {
-                    const isUpcoming = new Date(concert.date) >= today;
-                    if (isUpcoming) return null;
+                    if (isConcertUpcoming(concert)) return null;
                     return (
                       <ConcertRow
                         key={concert.id}
@@ -206,7 +244,7 @@ export function ConcertsSection({ lang }: { lang: Lang }) {
 }
 
 interface ConcertRowProps {
-  concert: ReturnType<typeof concerts>[number];
+  concert: ConcertRow;
   lang: Lang;
   formatDate: (date: string, lang: Lang) => string;
   t: (typeof translations)["fr"];
@@ -214,11 +252,16 @@ interface ConcertRowProps {
 }
 
 function ConcertRow({ concert, lang, formatDate, t, isPast }: ConcertRowProps) {
+  const ticketButtonText = concert.ticket_label ?? t.tour.tickets;
+  const showRight =
+    !isPast &&
+    (concert.ticket_url != null || concert.ticket_label != null);
+
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between p-6 bg-background rounded-lg border border-border">
       <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8">
         <div className="font-sans text-primary font-bold text-lg min-w-fit">
-          {formatDate(concert.date, lang)}
+          {formatDate(concert.event_date, lang)}
         </div>
         <div className="font-sans">
           <div className="font-semibold text-foreground">
@@ -227,32 +270,25 @@ function ConcertRow({ concert, lang, formatDate, t, isPast }: ConcertRowProps) {
           <div className="text-muted-foreground">{concert.venue}</div>
         </div>
       </div>
-      {!isPast && (
-        <>
-          {concert.isPrivate ? (
-            <span className="mt-4 sm:mt-0 text-sm uppercase tracking-widest text-muted-foreground font-medium">
-              {t.tour.concertPrive}
-            </span>
-          ) : concert.ticketUrl ? (
-            <Button
-              asChild
-              className="mt-4 sm:mt-0 font-sans bg-primary hover:bg-primary/90 text-primary-foreground"
+      {showRight &&
+        (concert.ticket_url ? (
+          <Button
+            asChild
+            className="mt-4 sm:mt-0 font-sans bg-primary hover:bg-primary/90 text-primary-foreground"
+          >
+            <Link
+              href={concert.ticket_url}
+              target="_blank"
+              rel="noopener noreferrer"
             >
-              <Link href={concert.ticketUrl} target="_blank" rel="noopener noreferrer">
-                {t.tour.tickets}
-              </Link>
-            </Button>
-          ) : (
-            <Button
-              disabled
-              className="mt-4 sm:mt-0 font-sans bg-primary/80 text-primary-foreground cursor-not-allowed opacity-90"
-              aria-label={t.tour.tickets}
-            >
-              {t.tour.tickets}
-            </Button>
-          )}
-        </>
-      )}
+              {ticketButtonText}
+            </Link>
+          </Button>
+        ) : (
+          <span className="mt-4 sm:mt-0 text-sm uppercase tracking-widest text-muted-foreground font-medium">
+            {concert.ticket_label}
+          </span>
+        ))}
     </div>
   );
 }

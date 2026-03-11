@@ -8,17 +8,6 @@ export interface TourDate {
   soldOut: boolean;
 }
 
-export interface Concert {
-  id: string;
-  date: string;
-  city: string;
-  venue: string;
-  country: string;
-  ticketUrl?: string;
-  /** When true, show "Concert Privé" instead of billetterie (no link). */
-  isPrivate?: boolean;
-}
-
 export interface Video {
   id: string;
   title: string;
@@ -286,114 +275,6 @@ export const pressLinks: PressLink[] = [
 ];
 
 export const tourDates: TourDate[] = [];
-
-export const concerts: Concert[] = [
-  {
-    id: "concert-past-1",
-    date: "2024-04-24",
-    city: "Paris",
-    venue: "We are live",
-    country: "France",
-  },
-  {
-    id: "concert-past-2",
-    date: "2024-04-26",
-    city: "Boulogne-Billancourt",
-    venue: "Première partie des Boyz II Men – La Seine Musicale",
-    country: "France",
-  },
-  {
-    id: "concert-past-3",
-    date: "2024-10-03",
-    city: "Paris",
-    venue: "Première partie de Seal – Zenith",
-    country: "France",
-  },
-  {
-    id: "concert-past-4",
-    date: "2024-10-21",
-    city: "Paris",
-    venue: "Première partie de Gavin DeGraw – L'Olympia",
-    country: "France",
-  },
-  {
-    id: "concert-past-5",
-    date: "2024-11-09",
-    city: "Paris",
-    venue: "Première partie de Tower of Power – Casino de Paris",
-    country: "France",
-  },
-  {
-    id: "concert-past-6",
-    date: "2025-03-14",
-    city: "Paris",
-    venue: "Première partie de The Amy Winehouse Band – La Cigale",
-    country: "France",
-  },
-  {
-    id: "concert-past-7",
-    date: "2025-10-02",
-    city: "Paris",
-    venue: "Bizz'art club",
-    country: "France",
-  },
-  {
-    id: "concert-1",
-    date: "2025-05-24",
-    city: "Saintes",
-    venue: "Le quai du Blues",
-    country: "France",
-    ticketUrl: "https://www.lequaidubleues.com",
-  },
-  {
-    id: "concert-2",
-    date: "2025-07-05",
-    city: "Enghien-les-Bains",
-    venue: "Barrière Enghien Jazz Festival",
-    country: "France",
-    ticketUrl: "https://www.barriereenghjazz.com",
-  },
-  {
-    id: "concert-3",
-    date: "2025-07-18",
-    city: "Robion",
-    venue: "Théâtre de Verduire",
-    country: "France",
-    ticketUrl: "https://www.theatreverduire.com",
-  },
-  {
-    id: "concert-4",
-    date: "2026-03-12",
-    city: "Paris",
-    venue: "We Are — Release Party Album",
-    country: "France",
-    isPrivate: true,
-  },
-  {
-    id: "concert-5",
-    date: "2026-03-27",
-    city: "Thaon-Les-Vosges",
-    venue: "La Rotonde",
-    country: "France",
-    ticketUrl: "https://cornolti.trium.fr/fr/t/-/event/65368",
-  },
-  {
-    id: "concert-6",
-    date: "2026-06-05",
-    city: "Contrexeville",
-    venue: "La Grande Fa'Brique",
-    country: "France",
-    ticketUrl: undefined,
-  },
-  {
-    id: "concert-7",
-    date: "2026-08-15",
-    city: "Saintes",
-    venue: "Les arènes de Saintes",
-    country: "France",
-    ticketUrl: "https://my.weezevent.com/blues-in-saintes",
-  },
-];
 
 export const featuredEP: EP = {
   id: "dark-black-ep",
