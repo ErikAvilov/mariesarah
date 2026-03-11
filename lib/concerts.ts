@@ -78,6 +78,42 @@ export type ConcertInsert = {
   is_upcoming?: boolean;
 };
 
+export type ConcertUpdate = {
+  event_date?: string;
+  city?: string;
+  country?: string;
+  venue?: string;
+  ticket_url?: string | null;
+  ticket_label?: string | null;
+  is_upcoming?: boolean;
+};
+
+/** Fetch all concerts for admin list, sorted by event_date descending */
+export async function getAllConcertsForAdmin(): Promise<ConcertRow[]> {
+  const { data, error } = await supabase
+    .from("concerts")
+    .select("*")
+    .order("event_date", { ascending: false });
+  if (error) throw error;
+  return (data ?? []) as ConcertRow[];
+}
+
+/** Fetch a single concert by id for edit page */
+export async function getConcertById(
+  id: string
+): Promise<ConcertRow | null> {
+  const { data, error } = await supabase
+    .from("concerts")
+    .select("*")
+    .eq("id", id)
+    .single();
+  if (error) {
+    if (error.code === "PGRST116") return null;
+    throw error;
+  }
+  return data as ConcertRow;
+}
+
 export async function insertConcert(
   row: ConcertInsert
 ): Promise<{ error: { message: string } | null }> {
@@ -90,6 +126,38 @@ export async function insertConcert(
     ticket_label: row.ticket_label ?? null,
     is_upcoming: row.is_upcoming ?? true,
   });
+  return {
+    error: error ? { message: error.message } : null,
+  };
+}
+
+export async function updateConcert(
+  id: string,
+  row: ConcertUpdate
+): Promise<{ error: { message: string } | null }> {
+  const { error } = await supabase
+    .from("concerts")
+    .update({
+      ...(row.event_date !== undefined && { event_date: row.event_date }),
+      ...(row.city !== undefined && { city: row.city }),
+      ...(row.country !== undefined && { country: row.country }),
+      ...(row.venue !== undefined && { venue: row.venue }),
+      ...(row.ticket_url !== undefined && { ticket_url: row.ticket_url ?? null }),
+      ...(row.ticket_label !== undefined && {
+        ticket_label: row.ticket_label ?? null,
+      }),
+      ...(row.is_upcoming !== undefined && { is_upcoming: row.is_upcoming }),
+    })
+    .eq("id", id);
+  return {
+    error: error ? { message: error.message } : null,
+  };
+}
+
+export async function deleteConcert(
+  id: string
+): Promise<{ error: { message: string } | null }> {
+  const { error } = await supabase.from("concerts").delete().eq("id", id);
   return {
     error: error ? { message: error.message } : null,
   };
