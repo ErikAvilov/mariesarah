@@ -26,7 +26,7 @@ export default function AdminLoginPage() {
       setError(err.message);
       return;
     }
-    router.push("/admin/concerts");
+    router.push("/admin");
     router.refresh();
   }
 

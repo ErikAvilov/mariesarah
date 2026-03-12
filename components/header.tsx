@@ -31,7 +31,6 @@ export function Header() {
     { href: "#music", label: t.nav.music },
     { href: "#tour", label: t.nav.tour },
     { href: "#bio", label: t.nav.bio },
-    { href: "#contact", label: t.nav.contact },
   ];
 
   return (

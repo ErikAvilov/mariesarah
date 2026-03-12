@@ -110,7 +110,7 @@ export function ConcertsSection({ lang }: { lang: Lang }) {
           {isAdmin && (
             <Link
               href="/admin/concerts/new"
-              className="absolute right-0 top-0 inline-flex h-9 w-9 items-center justify-center rounded-md border border-border text-foreground hover:bg-muted hover:border-muted-foreground/20 transition-colors"
+              className="absolute right-0 top-0 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground text-2xl font-semibold shadow-md hover:bg-primary/90 hover:scale-105 active:scale-95 transition-all"
               aria-label="Ajouter un concert"
             >
               +
