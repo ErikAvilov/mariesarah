@@ -1,6 +1,8 @@
 import React from "react"
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Playfair_Display, Montserrat } from "next/font/google";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { socialLinks } from "@/lib/data";
 import "./globals.css";
 
@@ -82,6 +84,8 @@ export default function RootLayout({
         className={`${plusJakarta.variable} ${playfair.variable} ${montserrat.variable} antialiased`}
       >
         {children}
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
