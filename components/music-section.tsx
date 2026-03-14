@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Lang, translations } from "@/lib/translations";
 import {
@@ -11,6 +12,7 @@ import {
 import { socialLinks, featuredEP } from "@/lib/data";
 import { FeaturedEP } from "@/components/featured-ep";
 import { SinglesGrid } from "@/components/singles-grid";
+import { supabase } from "@/lib/supabase";
 import type { SingleRow } from "@/lib/singles";
 
 export function MusicSection({
@@ -21,6 +23,13 @@ export function MusicSection({
   singles: SingleRow[];
 }) {
   const t = translations[lang];
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setIsAdmin(!!session);
+    });
+  }, []);
 
   return (
     <section id="music" className="pt-20 pb-8 lg:pt-32 lg:pb-12 bg-background relative">
@@ -34,7 +43,16 @@ export function MusicSection({
 
         <FeaturedEP ep={featuredEP} lang={lang} />
 
-        <div className="text-center mb-12">
+        <div className="text-center mb-12 relative">
+          {isAdmin && (
+            <Link
+              href="/admin/singles/new"
+              className="absolute right-0 top-0 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground text-2xl font-semibold shadow-md hover:bg-primary/90 hover:scale-105 active:scale-95 transition-all"
+              aria-label="Ajouter un single"
+            >
+              +
+            </Link>
+          )}
           <h3 className="font-bebas text-4xl sm:text-5xl font-bold uppercase text-foreground mb-4">
             {t.music.singles}
           </h3>
