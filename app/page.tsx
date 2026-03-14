@@ -7,16 +7,20 @@ import { PressSection } from "@/components/press-section";
 import { Footer } from "@/components/footer";
 import { SectionBlend } from "@/components/section-blend";
 import { OnMyWayModal } from "@/components/on-my-way-modal";
+import { getSingles } from "@/lib/singles";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
   const lang = "fr" as const;
+  const singles = await getSingles();
 
   return (
     <main>
       <OnMyWayModal />
       <Header />
       <Hero lang={lang} />
-      <MusicSection lang={lang} />
+      <MusicSection lang={lang} singles={singles} />
       <SectionBlend from="background" to="card" />
       <ConcertsSection lang={lang} />
       <SectionBlend from="card" to="secondary" />

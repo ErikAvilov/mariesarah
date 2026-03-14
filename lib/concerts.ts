@@ -28,15 +28,11 @@ export async function getConcerts(): Promise<{
       .from("concerts")
       .select("*");
 
-    console.log("SUPABASE concerts data:", data);
-
     if (error) {
-      console.error("SUPABASE concerts error:", error);
       return { upcoming: [], past: [] };
     }
 
     if (!data) {
-      console.error("Supabase returned no data");
       return { upcoming: [], past: [] };
     }
 
@@ -62,8 +58,7 @@ export async function getConcerts(): Promise<{
       );
 
     return { upcoming, past };
-  } catch (err) {
-    console.error("Unexpected Supabase fetch error:", err);
+  } catch {
     return { upcoming: [], past: [] };
   }
 }

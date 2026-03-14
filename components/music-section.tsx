@@ -8,11 +8,18 @@ import {
   DeezerIcon,
   YouTubeIcon,
 } from "@/components/Icons";
-import { socialLinks, youtubeVideos, featuredEP } from "@/lib/data";
+import { socialLinks, featuredEP } from "@/lib/data";
 import { FeaturedEP } from "@/components/featured-ep";
 import { SinglesGrid } from "@/components/singles-grid";
+import type { SingleRow } from "@/lib/singles";
 
-export function MusicSection({ lang }: { lang: Lang }) {
+export function MusicSection({
+  lang,
+  singles,
+}: {
+  lang: Lang;
+  singles: SingleRow[];
+}) {
   const t = translations[lang];
 
   return (
@@ -34,9 +41,9 @@ export function MusicSection({ lang }: { lang: Lang }) {
           <div className="w-16 h-1 bg-primary mx-auto" />
         </div>
 
-        {youtubeVideos.length > 0 && (
+        {singles.length > 0 && (
           <div className="w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-visible">
-            <SinglesGrid videos={youtubeVideos} />
+            <SinglesGrid singles={singles} />
           </div>
         )}
 

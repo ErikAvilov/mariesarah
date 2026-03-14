@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { deletePress, type PressRow } from "@/lib/press";
 import { Button } from "@/components/ui/button";
+import { Pencil, Trash2, Plus } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -52,11 +53,14 @@ export function AdminPressListClient({
   return (
     <div className="p-4 lg:p-8 max-w-5xl mx-auto">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-        <h1 className="font-bebas text-2xl uppercase text-foreground">
+        <h1 className="font-bebas text-3xl uppercase text-foreground">
           Presse / TV / Radio
         </h1>
-        <Button asChild>
-          <Link href="/admin/press/new">Ajouter un lien presse</Link>
+        <Button asChild size="lg" className="gap-2">
+          <Link href="/admin/press/new">
+            <Plus className="h-5 w-5" />
+            Ajouter un lien presse
+          </Link>
         </Button>
       </div>
 
@@ -95,17 +99,18 @@ export function AdminPressListClient({
                   <TableCell>{row.year}</TableCell>
                   <TableCell>
                     <div className="flex gap-2">
-                      <Button asChild variant="outline" size="sm">
+                      <Button asChild variant="outline" size="sm" aria-label={`Modifier ${row.title}`}>
                         <Link href={`/admin/press/${row.id}/edit`}>
-                          Modifier
+                          <Pencil className="h-4 w-4" />
                         </Link>
                       </Button>
                       <Button
                         variant="destructive"
                         size="sm"
                         onClick={() => setDeleteId(row.id)}
+                        aria-label={`Supprimer ${row.title}`}
                       >
-                        Supprimer
+                        <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
                   </TableCell>

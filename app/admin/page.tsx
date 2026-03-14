@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Music2, Radio } from "lucide-react";
+import { Music2, Radio, Disc3, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -17,7 +17,7 @@ export default function AdminDashboardPage() {
           Tableau de bord
         </h1>
         <p className="text-muted-foreground mt-1">
-          Gérez les concerts et les liens presse / TV / radio.
+          Gérez les concerts, les singles et les liens presse / TV / radio.
         </p>
       </div>
 
@@ -25,8 +25,8 @@ export default function AdminDashboardPage() {
         <Card className="border-border bg-background">
           <CardHeader className="flex flex-row items-start justify-between gap-4">
             <div className="space-y-1.5">
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <Music2 className="h-5 w-5 text-primary" />
+              <CardTitle className="flex items-center gap-2 text-xl">
+                <Music2 className="h-6 w-6 text-primary" />
                 Concerts
               </CardTitle>
               <CardDescription>
@@ -35,10 +35,13 @@ export default function AdminDashboardPage() {
             </div>
           </CardHeader>
           <CardContent className="flex flex-col gap-3">
-            <Button asChild className="w-full sm:w-auto">
-              <Link href="/admin/concerts/new">Ajouter un concert</Link>
+            <Button asChild size="lg" className="gap-2 w-full sm:w-auto">
+              <Link href="/admin/concerts/new">
+                <Plus className="h-5 w-5" />
+                Ajouter un concert
+              </Link>
             </Button>
-            <Button asChild variant="outline" className="w-full sm:w-auto">
+            <Button asChild variant="outline" size="lg" className="w-full sm:w-auto">
               <Link href="/admin/concerts">Voir la liste des concerts</Link>
             </Button>
           </CardContent>
@@ -47,8 +50,33 @@ export default function AdminDashboardPage() {
         <Card className="border-border bg-background">
           <CardHeader className="flex flex-row items-start justify-between gap-4">
             <div className="space-y-1.5">
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <Radio className="h-5 w-5 text-primary" />
+              <CardTitle className="flex items-center gap-2 text-xl">
+                <Disc3 className="h-6 w-6 text-primary" />
+                Singles
+              </CardTitle>
+              <CardDescription>
+                Gérez les singles (cover, YouTube, ordre d&apos;affichage).
+              </CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-3">
+            <Button asChild size="lg" className="gap-2 w-full sm:w-auto">
+              <Link href="/admin/singles/new">
+                <Plus className="h-5 w-5" />
+                Ajouter un single
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="lg" className="w-full sm:w-auto">
+              <Link href="/admin/singles">Voir la liste des singles</Link>
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card className="border-border bg-background">
+          <CardHeader className="flex flex-row items-start justify-between gap-4">
+            <div className="space-y-1.5">
+              <CardTitle className="flex items-center gap-2 text-xl">
+                <Radio className="h-6 w-6 text-primary" />
                 Presse / TV / Radio
               </CardTitle>
               <CardDescription>
@@ -57,10 +85,13 @@ export default function AdminDashboardPage() {
             </div>
           </CardHeader>
           <CardContent className="flex flex-col gap-3">
-            <Button asChild className="w-full sm:w-auto">
-              <Link href="/admin/press/new">Ajouter un lien presse</Link>
+            <Button asChild size="lg" className="gap-2 w-full sm:w-auto">
+              <Link href="/admin/press/new">
+                <Plus className="h-5 w-5" />
+                Ajouter un lien presse
+              </Link>
             </Button>
-            <Button asChild variant="outline" className="w-full sm:w-auto">
+            <Button asChild variant="outline" size="lg" className="w-full sm:w-auto">
               <Link href="/admin/press">Voir la liste des liens</Link>
             </Button>
           </CardContent>

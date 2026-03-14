@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { deleteConcert, type ConcertRow } from "@/lib/concerts";
+import { deleteSingleWithImage, type SingleRow } from "@/lib/singles";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -25,18 +25,10 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Pencil, Trash2, Plus } from "lucide-react";
 
-function formatDate(dateString: string) {
-  return new Date(dateString + "T00:00:00").toLocaleDateString("fr-FR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
-}
-
-export function AdminConcertsListClient({
-  initialConcerts,
+export function AdminSinglesListClient({
+  initialItems,
 }: {
-  initialConcerts: ConcertRow[];
+  initialItems: SingleRow[];
 }) {
   const router = useRouter();
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -46,7 +38,7 @@ export function AdminConcertsListClient({
 
   async function handleConfirmDelete(id: string) {
     setDeleting(true);
-    const { error: err } = await deleteConcert(id);
+    const { error: err } = await deleteSingleWithImage(id);
     setDeleting(false);
     if (err) {
       setError(err.message);
@@ -54,7 +46,7 @@ export function AdminConcertsListClient({
       return;
     }
     setDeleteId(null);
-    setSuccessMessage("Concert supprimé.");
+    setSuccessMessage("Single supprimé.");
     router.refresh();
   }
 
@@ -62,12 +54,12 @@ export function AdminConcertsListClient({
     <div className="p-4 lg:p-8 max-w-5xl mx-auto">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <h1 className="font-bebas text-3xl uppercase text-foreground">
-          Concerts
+          Singles
         </h1>
         <Button asChild size="lg" className="gap-2">
-          <Link href="/admin/concerts/new">
+          <Link href="/admin/singles/new">
             <Plus className="h-5 w-5" />
-            Ajouter un concert
+            Ajouter un single
           </Link>
         </Button>
       </div>
@@ -81,50 +73,49 @@ export function AdminConcertsListClient({
         <p className="mb-4 text-sm text-destructive">{error}</p>
       )}
 
-      {initialConcerts.length === 0 && !error ? (
-        <p className="text-muted-foreground py-8">
-          Aucun concert.{" "}
-          <Link href="/admin/concerts/new" className="text-primary hover:underline">
-            Ajouter un concert
-          </Link>
-        </p>
+      {initialItems.length === 0 && !error ? (
+        <div className="border border-dashed border-border rounded-lg p-12 text-center">
+          <p className="text-muted-foreground mb-6">Aucun single.</p>
+          <Button asChild size="lg" className="gap-2">
+            <Link href="/admin/singles/new">
+              <Plus className="h-5 w-5" />
+              Ajouter un single
+            </Link>
+          </Button>
+        </div>
       ) : (
         <div className="border border-border rounded-lg overflow-hidden">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Date</TableHead>
-                <TableHead>Ville</TableHead>
-                <TableHead>Pays</TableHead>
-                <TableHead>Lieu</TableHead>
-                <TableHead>Billetterie</TableHead>
-                <TableHead className="text-center">À venir</TableHead>
-                <TableHead className="w-[120px]">Actions</TableHead>
+                <TableHead>Ordre</TableHead>
+                <TableHead>Titre</TableHead>
+                <TableHead className="hidden sm:table-cell">URL YouTube</TableHead>
+                <TableHead className="w-[140px]">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {initialConcerts.map((c) => (
-                <TableRow key={c.id}>
-                  <TableCell>{formatDate(c.event_date)}</TableCell>
-                  <TableCell>{c.city}</TableCell>
-                  <TableCell>{c.country}</TableCell>
-                  <TableCell>{c.venue}</TableCell>
-                  <TableCell>{c.ticket_label ?? "—"}</TableCell>
-                  <TableCell className="text-center">
-                    {c.is_upcoming ? "Oui" : "Non"}
+              {initialItems.map((row) => (
+                <TableRow key={row.id}>
+                  <TableCell className="font-mono text-muted-foreground">
+                    {row.display_order}
+                  </TableCell>
+                  <TableCell className="font-medium">{row.title}</TableCell>
+                  <TableCell className="hidden sm:table-cell max-w-[200px] truncate text-muted-foreground text-sm">
+                    {row.youtube_url}
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-2">
-                      <Button asChild variant="outline" size="sm" aria-label={`Modifier ${c.venue}`}>
-                        <Link href={`/admin/concerts/${c.id}/edit`}>
+                      <Button asChild variant="outline" size="sm" aria-label={`Modifier ${row.title}`}>
+                        <Link href={`/admin/singles/${row.id}/edit`}>
                           <Pencil className="h-4 w-4" />
                         </Link>
                       </Button>
                       <Button
                         variant="destructive"
                         size="sm"
-                        onClick={() => setDeleteId(c.id)}
-                        aria-label={`Supprimer ${c.venue}`}
+                        onClick={() => setDeleteId(row.id)}
+                        aria-label={`Supprimer ${row.title}`}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -137,12 +128,15 @@ export function AdminConcertsListClient({
         </div>
       )}
 
-      <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
+      <AlertDialog
+        open={!!deleteId}
+        onOpenChange={(open) => !open && setDeleteId(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Supprimer le concert</AlertDialogTitle>
+            <AlertDialogTitle>Supprimer ce single</AlertDialogTitle>
             <AlertDialogDescription>
-              Êtes-vous sûr de vouloir supprimer ce concert ?
+              Êtes-vous sûr de vouloir supprimer ce single ?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

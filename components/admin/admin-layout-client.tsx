@@ -65,6 +65,12 @@ export function AdminLayoutClient({
             Concerts
           </Link>
           <Link
+            href="/admin/singles"
+            className="font-medium text-foreground hover:text-primary"
+          >
+            Singles
+          </Link>
+          <Link
             href="/admin/press"
             className="font-medium text-foreground hover:text-primary"
           >
