@@ -44,7 +44,8 @@ export async function getSingles(): Promise<SingleRow[]> {
   const { data, error } = await supabase
     .from("singles")
     .select("id, title, youtube_url, image_url, display_order, created_at")
-    .order("display_order", { ascending: true });
+    .order("display_order", { ascending: true })
+    .limit(500);
 
   if (error) throw error;
   // Objets sérialisables pour le passage Server → Client

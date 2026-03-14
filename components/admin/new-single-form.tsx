@@ -3,10 +3,14 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { insertSingle, type SingleInsert } from "@/lib/singles";
+import { insertSingle, type SingleInsert, type SingleRow } from "@/lib/singles";
 import { SingleForm } from "@/components/admin/single-form";
 
-export function NewSingleForm() {
+export function NewSingleForm({
+  existingSingles = [],
+}: {
+  existingSingles?: SingleRow[];
+}) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -42,6 +46,7 @@ export function NewSingleForm() {
         error={error}
         cancelHref="/admin/singles"
         cancelLabel="Annuler"
+        existingSingles={existingSingles}
       />
       <p className="mt-6 text-sm text-muted-foreground">
         <Link href="/admin" className="hover:text-foreground">

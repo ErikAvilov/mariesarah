@@ -1,10 +1,65 @@
 "use client";
 
 import * as React from "react";
+import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 import type { SingleRow, SingleInsert } from "@/lib/singles";
+
+function OrderPreview({
+  position,
+  existingSingles,
+}: {
+  position: number;
+  existingSingles: SingleRow[];
+}) {
+  const safePosition = Math.max(0, position);
+  const merged: Array<SingleRow | { placeholder: true }> = [
+    ...existingSingles.slice(0, safePosition),
+    { placeholder: true } as { placeholder: true },
+    ...existingSingles.slice(safePosition),
+  ];
+
+  return (
+    <div className="flex flex-col gap-3 w-full">
+      <p className="text-xs text-muted-foreground">
+        Aperçu : votre single apparaîtra à la position {safePosition} (comme sur le site).
+      </p>
+      <div
+        className={cn(
+          "grid grid-cols-2 gap-2 max-w-[280px]",
+          "rounded-lg border border-border bg-muted/30 p-2"
+        )}
+      >
+        {merged.map((item, i) =>
+          "placeholder" in item && item.placeholder ? (
+            <div
+              key="new"
+              className="aspect-square rounded-md border-2 border-dashed border-primary bg-primary/10 flex flex-col items-center justify-center gap-1.5 transition-all duration-300"
+            >
+              <Plus className="h-6 w-6 text-primary" strokeWidth={2.5} />
+              <span className="text-primary text-xs font-medium">Votre single</span>
+              <span className="text-primary/70 text-[10px]">position {safePosition}</span>
+            </div>
+          ) : (
+            <div
+              key={(item as SingleRow).id}
+              className="aspect-square rounded-md overflow-hidden border border-border bg-card"
+            >
+              <img
+                src={(item as SingleRow).image_url}
+                alt=""
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )
+        )}
+      </div>
+    </div>
+  );
+}
 
 type SingleFormValues = SingleInsert;
 
@@ -19,6 +74,8 @@ type SingleFormProps = {
   cancelLabel?: string;
   /** En mode édition, l'image actuelle peut être conservée (pas de nouveau fichier) */
   isEdit?: boolean;
+  /** Liste des singles existants pour l’aperçu de position (ajout uniquement) */
+  existingSingles?: SingleRow[];
 };
 
 const emptyForm: SingleFormValues = {
@@ -37,6 +94,7 @@ export function SingleForm({
   cancelHref,
   cancelLabel = "Annuler",
   isEdit = false,
+  existingSingles = [],
 }: SingleFormProps) {
   const [form, setForm] = React.useState<SingleFormValues>(() => ({
     ...emptyForm,
@@ -174,19 +232,28 @@ export function SingleForm({
         <Label htmlFor="single-order" className="mb-1 block">
           Ordre d&apos;affichage
         </Label>
-        <Input
-          id="single-order"
-          type="number"
-          min={0}
-          value={form.display_order}
-          onChange={(e) =>
-            setForm((f) => ({
-              ...f,
-              display_order: parseInt(e.target.value, 10) || 0,
-            }))
-          }
-          placeholder="0"
-        />
+        <div className="flex flex-col sm:flex-row sm:items-start gap-4">
+          <Input
+            id="single-order"
+            type="number"
+            min={0}
+            value={form.display_order}
+            onChange={(e) =>
+              setForm((f) => ({
+                ...f,
+                display_order: Math.max(0, parseInt(e.target.value, 10) || 0),
+              }))
+            }
+            placeholder="0"
+            className="w-24"
+          />
+          {!isEdit && existingSingles.length >= 0 && (
+            <OrderPreview
+              position={form.display_order}
+              existingSingles={existingSingles}
+            />
+          )}
+        </div>
       </div>
       {(error || uploadError) && (
         <p className="text-sm text-destructive">{uploadError ?? error}</p>

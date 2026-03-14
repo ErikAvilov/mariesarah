@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LayoutDashboard } from "lucide-react";
 import { Lang, translations } from "@/lib/translations";
 import {
   SpotifyIcon,
@@ -13,16 +13,30 @@ import {
   FacebookIcon,
 } from "@/components/Icons";
 import { socialLinks, shopUrl } from "@/lib/data";
+import { supabase } from "@/lib/supabase";
 
 export function Header() {
   const [lang, setLang] = useState<Lang>("fr");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showAdminLink, setShowAdminLink] = useState(false);
 
   useEffect(() => {
     const browserLang = navigator.language || "";
     if (browserLang.startsWith("en")) {
       setLang("en");
     }
+  }, []);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setShowAdminLink(!!session);
+    });
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setShowAdminLink(!!session);
+    });
+    return () => subscription.unsubscribe();
   }, []);
 
   const t = translations[lang];
@@ -56,6 +70,16 @@ export function Header() {
               <span className="relative z-10">{t.nav.shop}</span>
               <span className="absolute inset-0 z-0 bg-primary scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300 ease-out" />
             </Link>
+            {showAdminLink && (
+              <Link
+                href="/admin"
+                className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+                title="Tableau de bord admin"
+              >
+                <LayoutDashboard className="h-4 w-4" />
+                Admin
+              </Link>
+            )}
           </nav>
 
           <div className="absolute left-1/2 -translate-x-1/2 lg:static lg:translate-x-0 lg:mx-auto">
@@ -162,6 +186,16 @@ export function Header() {
               <span className="relative z-10">{t.nav.shop}</span>
               <span className="absolute inset-0 z-0 bg-primary scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300 ease-out" />
             </Link>
+            {showAdminLink && (
+              <Link
+                href="/admin"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center justify-center gap-2 mt-2 py-2 text-sm font-medium text-muted-foreground hover:text-primary"
+              >
+                <LayoutDashboard className="h-4 w-4" />
+                Admin
+              </Link>
+            )}
             <div className="flex items-center gap-4 pt-4 border-t border-border mt-2">
               <Link
                 href={socialLinks.spotify}
