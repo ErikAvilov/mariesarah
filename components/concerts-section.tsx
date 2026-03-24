@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { Lang, translations } from "@/lib/data";
 import { getConcerts, type ConcertRow } from "@/lib/concerts";
@@ -11,12 +11,64 @@ import { socialLinks } from "@/lib/data";
 import { AdminCursorMenu } from "@/components/admin-cursor-menu";
 import { cnAdminEditSurface } from "@/lib/admin-editable-hover";
 import { cn } from "@/lib/utils";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
-const ITEMS_PER_PAGE = 10;
+const PAST_PER_PAGE = 5;
+
+/** Même gabarit que `ConcertListRow` (concert passé, sans bouton droit). */
+const CONCERT_ROW_SHELL =
+  "flex flex-col sm:flex-row sm:items-center justify-between p-6 bg-background rounded-lg border border-border";
+
+function PastConcertRowPlaceholder() {
+  return (
+    <div
+      className={cn(
+        CONCERT_ROW_SHELL,
+        "pointer-events-none border-dashed border-muted-foreground/20 bg-muted/15"
+      )}
+      aria-hidden
+    >
+      <div className="invisible flex w-full flex-col gap-4 sm:flex-row sm:items-center sm:gap-8">
+        <div className="min-w-fit font-sans text-lg font-bold text-primary">
+          31/12/2024
+        </div>
+        <div className="font-sans">
+          <div className="font-semibold text-foreground">Ville, Pays</div>
+          <div className="text-muted-foreground">Lieu du concert</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** Numéros de page visibles avec ellipses si beaucoup de pages. */
+function visiblePastPageSlots(
+  current: number,
+  total: number
+): (number | "ellipsis")[] {
+  if (total <= 7) {
+    return Array.from({ length: total }, (_, i) => i + 1);
+  }
+  const set = new Set<number>();
+  set.add(1);
+  set.add(total);
+  for (let i = current - 1; i <= current + 1; i++) {
+    if (i >= 1 && i <= total) set.add(i);
+  }
+  const sorted = [...set].sort((a, b) => a - b);
+  const out: (number | "ellipsis")[] = [];
+  for (let i = 0; i < sorted.length; i++) {
+    if (i > 0 && sorted[i] - sorted[i - 1]! > 1) {
+      out.push("ellipsis");
+    }
+    out.push(sorted[i]!);
+  }
+  return out;
+}
 
 export function ConcertsSection({ lang }: { lang: Lang }) {
   const t = translations[lang];
-  const [currentPage, setCurrentPage] = useState(1);
+  const [pastPage, setPastPage] = useState(1);
   const [upcomingConcerts, setUpcomingConcerts] = useState<ConcertRow[]>([]);
   const [pastConcerts, setPastConcerts] = useState<ConcertRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -37,44 +89,37 @@ export function ConcertsSection({ lang }: { lang: Lang }) {
   }, []);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      const page = parseInt(params.get("page") || "1", 10);
-      if (page > 0) {
-        setCurrentPage(page);
-      }
-    }
-  }, []);
-
-  useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setIsAdmin(!!session);
     });
   }, []);
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-    const url = new URL(window.location.href);
-    url.searchParams.set("page", page.toString());
-    window.history.replaceState({}, "", url);
-  };
+  const totalPastPages = useMemo(() => {
+    if (pastConcerts.length === 0) return 0;
+    return Math.ceil(pastConcerts.length / PAST_PER_PAGE);
+  }, [pastConcerts.length]);
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  useEffect(() => {
+    if (pastConcerts.length === 0) {
+      setPastPage(1);
+      return;
+    }
+    const tp = Math.ceil(pastConcerts.length / PAST_PER_PAGE);
+    setPastPage((p) => Math.min(Math.max(1, p), tp));
+  }, [pastConcerts.length]);
 
-  const isConcertUpcoming = (c: ConcertRow) => {
-    const eventDate = new Date(c.event_date + "T00:00:00");
-    return eventDate.getTime() >= today.getTime();
-  };
+  const paginatedPast = useMemo(() => {
+    if (pastConcerts.length === 0) return [];
+    const start = (pastPage - 1) * PAST_PER_PAGE;
+    return pastConcerts.slice(start, start + PAST_PER_PAGE);
+  }, [pastConcerts, pastPage]);
 
-  const allConcerts = [...upcomingConcerts, ...pastConcerts];
+  const pastRangeStart =
+    pastConcerts.length === 0 ? 0 : (pastPage - 1) * PAST_PER_PAGE + 1;
+  const pastRangeEnd = Math.min(pastPage * PAST_PER_PAGE, pastConcerts.length);
 
-  const totalPages = Math.ceil(allConcerts.length / ITEMS_PER_PAGE);
-  const startIdx = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedConcerts = allConcerts.slice(startIdx, startIdx + ITEMS_PER_PAGE);
-
-  const pageHasUpcoming = paginatedConcerts.some(isConcertUpcoming);
-  const pageHasPast = paginatedConcerts.some((c) => !isConcertUpcoming(c));
+  const pastPageSlots =
+    totalPastPages > 0 ? visiblePastPageSlots(pastPage, totalPastPages) : [];
 
   const formatDate = (dateString: string, lang: Lang) => {
     const date = new Date(dateString + "T00:00:00");
@@ -130,109 +175,152 @@ export function ConcertsSection({ lang }: { lang: Lang }) {
           <div className="w-16 h-1 bg-primary mx-auto" />
         </div>
 
-        {allConcerts.length > 0 ? (
-          <div className="space-y-12 min-h-[800px]">
-            {pageHasUpcoming && (
+        {upcomingConcerts.length > 0 || pastConcerts.length > 0 ? (
+          <div className="space-y-12">
+            {upcomingConcerts.length > 0 && (
               <div>
                 <h3 className="font-bebas text-2xl font-semibold uppercase text-foreground mb-6 pb-2 border-b border-border">
                   {t.tour.upcoming}
                 </h3>
                 <div className="space-y-4">
-                  {paginatedConcerts.map((concert) => {
-                    if (!isConcertUpcoming(concert)) return null;
-                    return (
-                      <ConcertListRow
-                        key={concert.id}
-                        concert={concert}
-                        lang={lang}
-                        formatDate={formatDate}
-                        t={t}
-                        isPast={false}
-                        isAdmin={isAdmin}
-                        onAdminOpenMenu={(e, c) =>
-                          setAdminMenu({
-                            x: e.clientX,
-                            y: e.clientY,
-                            concertId: c.id,
-                          })
-                        }
-                      />
-                    );
-                  })}
+                  {upcomingConcerts.map((concert) => (
+                    <ConcertListRow
+                      key={concert.id}
+                      concert={concert}
+                      lang={lang}
+                      formatDate={formatDate}
+                      t={t}
+                      isPast={false}
+                      isAdmin={isAdmin}
+                      onAdminOpenMenu={(e, c) =>
+                        setAdminMenu({
+                          x: e.clientX,
+                          y: e.clientY,
+                          concertId: c.id,
+                        })
+                      }
+                    />
+                  ))}
                 </div>
               </div>
             )}
 
-            {pageHasPast && (
+            {pastConcerts.length > 0 && (
               <div>
                 <h3 className="font-bebas text-2xl font-semibold uppercase text-foreground mb-6 pb-2 border-b border-border">
                   {t.tour.past}
                 </h3>
                 <div className="space-y-4">
-                  {paginatedConcerts.map((concert) => {
-                    if (isConcertUpcoming(concert)) return null;
-                    return (
-                      <ConcertListRow
-                        key={concert.id}
-                        concert={concert}
-                        lang={lang}
-                        formatDate={formatDate}
-                        t={t}
-                        isPast={true}
-                        isAdmin={isAdmin}
-                        onAdminOpenMenu={(e, c) =>
-                          setAdminMenu({
-                            x: e.clientX,
-                            y: e.clientY,
-                            concertId: c.id,
-                          })
-                        }
-                      />
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            {totalPages > 1 && (
-              <div className="flex items-center justify-center gap-2 mt-12 pt-8 border-t border-border">
-                <button
-                  onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-                  disabled={currentPage === 1}
-                  className="px-3 py-2 text-sm rounded-md border border-border text-foreground cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-muted hover:border-muted-foreground/20 transition-colors"
-                  aria-label="Previous page"
-                >
-                  ←
-                </button>
-
-                <div className="flex items-center gap-1">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                    (page) => (
-                      <button
-                        key={page}
-                        onClick={() => handlePageChange(page)}
-                        className={`w-10 h-10 rounded-md text-sm font-medium transition-colors cursor-pointer ${
-                          currentPage === page
-                            ? "bg-primary text-primary-foreground"
-                            : "border border-border text-foreground hover:bg-muted hover:border-muted-foreground/20"
-                        }`}
-                        aria-label={`Page ${page}`}
-                        aria-current={currentPage === page ? "page" : undefined}
-                      >
-                        {page}
-                      </button>
-                    )
-                  )}
+                  {paginatedPast.map((concert) => (
+                    <ConcertListRow
+                      key={concert.id}
+                      concert={concert}
+                      lang={lang}
+                      formatDate={formatDate}
+                      t={t}
+                      isPast={true}
+                      isAdmin={isAdmin}
+                      onAdminOpenMenu={(e, c) =>
+                        setAdminMenu({
+                          x: e.clientX,
+                          y: e.clientY,
+                          concertId: c.id,
+                        })
+                      }
+                    />
+                  ))}
+                  {totalPastPages > 1
+                    ? Array.from({
+                        length: Math.max(
+                          0,
+                          PAST_PER_PAGE - paginatedPast.length
+                        ),
+                      }).map((_, i) => (
+                        <PastConcertRowPlaceholder
+                          key={`past-empty-${pastPage}-${i}`}
+                        />
+                      ))
+                    : null}
                 </div>
 
-                <button
-                  onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
-                  disabled={currentPage === totalPages}
-                  className="px-3 py-2 text-sm rounded-md border border-border text-foreground cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-muted hover:border-muted-foreground/20 transition-colors"
-                  aria-label="Next page"
-                >
-                  →
-                </button>
+                {totalPastPages > 1 && (
+                  <nav
+                    className="mt-10 pt-8 border-t border-border"
+                    aria-label={t.tour.pastPaginationAria}
+                  >
+                    <div className="flex flex-col items-stretch gap-5 sm:flex-row sm:items-center sm:justify-between">
+                      <p className="order-2 text-center text-sm leading-snug text-muted-foreground sm:order-1 sm:max-w-[min(100%,20rem)] sm:flex-1 sm:text-left">
+                        {t.tour.pastPaginationRange
+                          .replace("{start}", String(pastRangeStart))
+                          .replace("{end}", String(pastRangeEnd))
+                          .replace("{total}", String(pastConcerts.length))}
+                      </p>
+                      <div className="order-1 flex flex-wrap items-center justify-center gap-2 sm:order-2 sm:shrink-0">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setPastPage((p) => Math.max(1, p - 1))
+                          }
+                          disabled={pastPage <= 1}
+                          className="inline-flex h-10 items-center justify-center gap-1.5 rounded-lg border border-border bg-background px-3 text-sm font-medium transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-40 sm:px-4"
+                          aria-label={t.tour.pastPaginationPrev}
+                        >
+                          <ChevronLeft className="h-4 w-4 shrink-0" aria-hidden />
+                          <span className="hidden sm:inline">
+                            {t.tour.pastPaginationPrev}
+                          </span>
+                        </button>
+                        <div className="flex items-center justify-center gap-1">
+                          {pastPageSlots.map((slot, idx) =>
+                            slot === "ellipsis" ? (
+                              <span
+                                key={`e-${idx}`}
+                                className="flex h-9 w-9 items-center justify-center text-sm text-muted-foreground"
+                                aria-hidden
+                              >
+                                …
+                              </span>
+                            ) : (
+                              <button
+                                key={slot}
+                                type="button"
+                                onClick={() => setPastPage(slot)}
+                                className={cn(
+                                  "flex h-9 min-w-[2.25rem] items-center justify-center rounded-lg text-sm font-semibold transition-colors",
+                                  pastPage === slot
+                                    ? "bg-primary text-primary-foreground shadow-sm"
+                                    : "border border-transparent text-foreground hover:bg-muted hover:border-border"
+                                )}
+                                aria-label={t.tour.pastPaginationPage
+                                  .replace("{current}", String(slot))
+                                  .replace("{total}", String(totalPastPages))}
+                                aria-current={pastPage === slot ? "page" : undefined}
+                              >
+                                {slot}
+                              </button>
+                            )
+                          )}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setPastPage((p) =>
+                              Math.min(totalPastPages, p + 1)
+                            )
+                          }
+                          disabled={pastPage >= totalPastPages}
+                          className="inline-flex h-10 items-center justify-center gap-1.5 rounded-lg border border-border bg-background px-3 text-sm font-medium transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-40 sm:px-4"
+                          aria-label={t.tour.pastPaginationNext}
+                        >
+                          <span className="hidden sm:inline">
+                            {t.tour.pastPaginationNext}
+                          </span>
+                          <ChevronRight className="h-4 w-4 shrink-0" aria-hidden />
+                        </button>
+                      </div>
+                    </div>
+                  </nav>
+                )}
               </div>
             )}
           </div>
@@ -315,7 +403,7 @@ function ConcertListRow({
   return (
     <div
       className={cn(
-        "flex flex-col sm:flex-row sm:items-center justify-between p-6 bg-background rounded-lg border border-border",
+        CONCERT_ROW_SHELL,
         cnAdminEditSurface(isAdmin)
       )}
       onClick={

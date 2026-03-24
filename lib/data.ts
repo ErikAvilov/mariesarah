@@ -57,6 +57,11 @@ export const translations = {
       upcoming: "Prochains concerts",
       past: "Concerts passés",
       noPastDates: "Aucune date à venir pour le moment",
+      pastPaginationPrev: "Précédent",
+      pastPaginationNext: "Suivant",
+      pastPaginationAria: "Pagination des concerts passés",
+      pastPaginationPage: "Page {current} sur {total}",
+      pastPaginationRange: "Concerts {start} à {end} sur {total}",
     },
     bio: {
       title: "Biographie",
@@ -129,6 +134,11 @@ export const translations = {
       upcoming: "Upcoming Concerts",
       past: "Past Concerts",
       noPastDates: "No upcoming dates at the moment",
+      pastPaginationPrev: "Previous",
+      pastPaginationNext: "Next",
+      pastPaginationAria: "Past concerts pagination",
+      pastPaginationPage: "Page {current} of {total}",
+      pastPaginationRange: "Concerts {start}–{end} of {total}",
     },
     bio: {
       title: "Biography",
