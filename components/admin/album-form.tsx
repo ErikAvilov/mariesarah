@@ -273,7 +273,7 @@ export function AlbumForm({
         </Label>
         <Input
           id="album-cover-url"
-          type="url"
+          type="text"
           value={form.cover_image_url}
           onChange={(e) => setForm((f) => ({ ...f, cover_image_url: e.target.value }))}
           placeholder="https://… ou importez un fichier ci-dessous"

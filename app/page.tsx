@@ -6,22 +6,24 @@ import { BioSection } from "@/components/bio-section";
 import { PressSection } from "@/components/press-section";
 import { Footer } from "@/components/footer";
 import { SectionBlend } from "@/components/section-blend";
-import { OnMyWayModal } from "@/components/on-my-way-modal";
+import { PromotionalSiteModal } from "@/components/promotional-site-modal";
 import { getSingles } from "@/lib/singles";
 import { getPublicFeaturedAlbum } from "@/lib/albums";
+import { getActiveSiteModal } from "@/lib/site-modals";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const lang = "fr" as const;
-  const [singles, featuredAlbum] = await Promise.all([
+  const [singles, featuredAlbum, activeModal] = await Promise.all([
     getSingles(),
     getPublicFeaturedAlbum(),
+    getActiveSiteModal(),
   ]);
 
   return (
     <main>
-      <OnMyWayModal />
+      <PromotionalSiteModal modal={activeModal} />
       <Header />
       <Hero lang={lang} />
       <MusicSection lang={lang} singles={singles} featuredAlbum={featuredAlbum} />

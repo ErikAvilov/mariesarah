@@ -12,11 +12,18 @@ export interface ConcertRow {
   created_at: string;
 }
 
-function isUpcoming(row: ConcertRow): boolean {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const eventDate = new Date(row.event_date + "T00:00:00");
-  return eventDate >= today || row.is_upcoming === true;
+function startOfToday(): Date {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+function eventDayStart(row: ConcertRow): Date {
+  return new Date(row.event_date + "T00:00:00");
+}
+
+function isUpcomingByEventDate(row: ConcertRow, todayStart: Date): boolean {
+  return eventDayStart(row).getTime() >= todayStart.getTime();
 }
 
 export async function getConcerts(): Promise<{
@@ -37,24 +44,18 @@ export async function getConcerts(): Promise<{
     }
 
     const list = data as ConcertRow[];
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const todayStart = startOfToday();
 
     const upcoming = list
-      .filter((row) => {
-        const eventDate = new Date(row.event_date + "T00:00:00");
-        return eventDate >= today || row.is_upcoming === true;
-      })
+      .filter((row) => isUpcomingByEventDate(row, todayStart))
       .sort(
-        (a, b) =>
-          new Date(a.event_date).getTime() - new Date(b.event_date).getTime()
+        (a, b) => eventDayStart(a).getTime() - eventDayStart(b).getTime()
       );
 
     const past = list
-      .filter((row) => !isUpcoming(row))
+      .filter((row) => !isUpcomingByEventDate(row, todayStart))
       .sort(
-        (a, b) =>
-          new Date(b.event_date).getTime() - new Date(a.event_date).getTime()
+        (a, b) => eventDayStart(b).getTime() - eventDayStart(a).getTime()
       );
 
     return { upcoming, past };

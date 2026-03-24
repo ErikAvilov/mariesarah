@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Music2, Radio, Disc3, Plus, Library } from "lucide-react";
+import { Music2, Radio, Disc3, Plus, Library, LayoutTemplate } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -17,12 +17,37 @@ export default function AdminDashboardPage() {
           Tableau de bord
         </h1>
         <p className="text-muted-foreground mt-1">
-          Gérez les concerts, les albums, les singles et les liens presse / TV / radio.
+          Gérez les concerts, les albums, les singles, le modal d&apos;accueil et les liens presse / TV / radio.
         </p>
       </div>
 
       <div className="grid sm:grid-cols-2 gap-6">
         <Card className="border-border bg-background border-l-4 border-l-primary">
+          <CardHeader className="flex flex-row items-start justify-between gap-4">
+            <div className="space-y-1.5">
+              <CardTitle className="flex items-center gap-2 text-xl">
+                <LayoutTemplate className="h-6 w-6 text-primary" />
+                Modal d&apos;accueil
+              </CardTitle>
+              <CardDescription>
+                Image promotionnelle affichée sur la page d&apos;accueil après quelques secondes.
+              </CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-3">
+            <Button asChild size="lg" className="gap-2 w-full sm:w-auto">
+              <Link href="/admin/modals/new">
+                <Plus className="h-5 w-5" />
+                Ajouter un modal
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="lg" className="w-full sm:w-auto">
+              <Link href="/admin/modals">Gérer les modals</Link>
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card className="border-border bg-background">
           <CardHeader className="flex flex-row items-start justify-between gap-4">
             <div className="space-y-1.5">
               <CardTitle className="flex items-center gap-2 text-xl">

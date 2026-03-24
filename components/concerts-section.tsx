@@ -56,7 +56,7 @@ export function ConcertsSection({ lang }: { lang: Lang }) {
 
   const isConcertUpcoming = (c: ConcertRow) => {
     const eventDate = new Date(c.event_date + "T00:00:00");
-    return eventDate >= today || c.is_upcoming === true;
+    return eventDate.getTime() >= today.getTime();
   };
 
   const allConcerts = [...upcomingConcerts, ...pastConcerts];

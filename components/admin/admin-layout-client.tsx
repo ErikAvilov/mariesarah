@@ -77,6 +77,12 @@ export function AdminLayoutClient({
             Albums
           </Link>
           <Link
+            href="/admin/modals"
+            className="font-medium text-foreground hover:text-primary"
+          >
+            Modals
+          </Link>
+          <Link
             href="/admin/press"
             className="font-medium text-foreground hover:text-primary"
           >
