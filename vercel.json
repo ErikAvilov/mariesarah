@@ -1,0 +1,10 @@
+{
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "mariesarah.vercel.app" }],
+      "destination": "https://mariesarah.com/:path*",
+      "permanent": true
+    }
+  ]
+}
