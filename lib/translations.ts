@@ -15,11 +15,12 @@ export const translations = {
       allLinks: "Toutes les plateformes",
     },
     music: {
-      title: "Musique",
+      title: "Musique & singles",
       premierEP: "Premier EP",
       singles: "Singles",
       listenEP: "Écouter l'EP",
       allLinks: "Toutes les plateformes",
+      trackList: "Morceaux",
     },
     tour: {
       title: "Concerts",
@@ -71,11 +72,12 @@ export const translations = {
       allLinks: "All Links",
     },
     music: {
-      title: "Music",
+      title: "Music & singles",
       premierEP: "Premier EP",
       singles: "Singles",
       listenEP: "Listen to the EP",
       allLinks: "All platforms",
+      trackList: "Tracks",
     },
     tour: {
       title: "Tour",

@@ -33,10 +33,13 @@ export function Hero({
       />
 
       <div className="relative lg:absolute lg:bottom-12 lg:left-8 lg:bg-transparent z-20 w-full lg:w-auto font-montserrat">
+        <h1 className="sr-only">
+          {`${content.artist_name} — ${content.title}. ${content.eyebrow}. Chanteuse soul, Paris — site officiel.`}
+        </h1>
         <div className="lg:hidden bg-secondary/95 px-6 py-8 sm:px-8 sm:py-10 border-t border-primary/20">
-          <h1 className="font-bebas text-2xl sm:text-3xl font-bold text-secondary-foreground mb-2 tracking-[0.2em]">
+          <p className="font-bebas text-2xl sm:text-3xl font-bold text-secondary-foreground mb-2 tracking-[0.2em]">
             {content.artist_name}
-          </h1>
+          </p>
           <p className="text-sm font-medium uppercase tracking-widest text-secondary-foreground/70 mb-2">
             {content.eyebrow}
           </p>

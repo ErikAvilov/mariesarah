@@ -1,15 +1,16 @@
 import type { MetadataRoute } from "next";
-
-const baseUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://mariesarah.com");
+import { getSiteUrl } from "@/lib/site-config";
 
 export default function robots(): MetadataRoute.Robots {
+  const baseUrl = getSiteUrl();
   return {
-    rules: {
-      userAgent: "*",
-      allow: "/",
-    },
+    rules: [
+      {
+        userAgent: "*",
+        allow: "/",
+        disallow: ["/admin/", "/api/"],
+      },
+    ],
     sitemap: `${baseUrl}/sitemap.xml`,
   };
 }

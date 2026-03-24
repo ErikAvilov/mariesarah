@@ -39,7 +39,7 @@ export const translations = {
       allLinks: "Toutes les plateformes",
     },
     music: {
-      title: "Musique",
+      title: "Musique & singles",
       singles: "Singles",
       premierEP: "Premier EP",
       listenEP: "Écouter",

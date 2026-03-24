@@ -56,7 +56,7 @@ export function SinglesGrid({ singles }: SinglesGridProps) {
             <div className="relative aspect-video w-full rounded-lg overflow-hidden bg-black border border-border">
               <iframe
                 src={`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`}
-                title={single.title}
+                title={`Clip « ${single.title} » — Marie Sarah`}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
                 className="absolute inset-0 w-full h-full border-0"
@@ -75,7 +75,7 @@ export function SinglesGrid({ singles }: SinglesGridProps) {
           "max-w-7xl mx-auto"
         )}
         role="list"
-        aria-label="Singles"
+        aria-label="Singles de Marie Sarah"
       >
         {mostRecent && (() => {
           const single = mostRecent;
@@ -103,7 +103,9 @@ export function SinglesGrid({ singles }: SinglesGridProps) {
                 >
                   <img
                     src={single.image_url || ""}
-                    alt=""
+                    alt={`Marie Sarah — ${single.title}, pochette du single`}
+                    loading="eager"
+                    decoding="async"
                     className={cn(
                       "absolute inset-0 w-full h-full object-cover transition-transform duration-300 ease-out origin-center",
                       "group-hover:scale-[1.05]"
@@ -161,7 +163,9 @@ export function SinglesGrid({ singles }: SinglesGridProps) {
               >
                 <img
                   src={single.image_url || ""}
-                  alt=""
+                  alt={`Marie Sarah — ${single.title}, pochette du single`}
+                  loading="lazy"
+                  decoding="async"
                   className={cn(
                     "absolute inset-0 w-full h-full object-cover transition-transform duration-300 ease-out origin-center",
                     "group-hover:scale-[1.05]"

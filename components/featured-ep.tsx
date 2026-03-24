@@ -20,7 +20,11 @@ export function FeaturedEP({ album, lang }: FeaturedEPProps) {
           <div className="relative w-full aspect-square max-w-xs md:max-w-none">
             <Image
               src={album.coverImageUrl}
-              alt={album.title}
+              alt={
+                lang === "fr"
+                  ? `${album.title} — ${album.artistName}, pochette d’album`
+                  : `${album.title} — ${album.artistName}, album cover`
+              }
               fill
               className="object-cover rounded-lg"
               priority
@@ -43,7 +47,9 @@ export function FeaturedEP({ album, lang }: FeaturedEPProps) {
           </div>
 
           <div className="mb-8">
-            <h4 className="text-sm font-semibold text-foreground mb-3 tracking-wide">Tracks</h4>
+            <h4 className="text-sm font-semibold text-foreground mb-3 tracking-wide">
+              {t.music.trackList}
+            </h4>
             <ol className="space-y-2">
               {album.tracks.map((track, index) => (
                 <li
