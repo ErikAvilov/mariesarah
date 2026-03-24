@@ -83,6 +83,12 @@ export function AdminLayoutClient({
             Modals
           </Link>
           <Link
+            href="/admin/hero-highlights"
+            className="font-medium text-foreground hover:text-primary"
+          >
+            Hero
+          </Link>
+          <Link
             href="/admin/press"
             className="font-medium text-foreground hover:text-primary"
           >

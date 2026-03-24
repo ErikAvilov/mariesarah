@@ -10,22 +10,24 @@ import { PromotionalSiteModal } from "@/components/promotional-site-modal";
 import { getSingles } from "@/lib/singles";
 import { getPublicFeaturedAlbum } from "@/lib/albums";
 import { getActiveSiteModal } from "@/lib/site-modals";
+import { getActiveHeroHighlight } from "@/lib/hero-highlights";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const lang = "fr" as const;
-  const [singles, featuredAlbum, activeModal] = await Promise.all([
+  const [singles, featuredAlbum, activeModal, heroHighlight] = await Promise.all([
     getSingles(),
     getPublicFeaturedAlbum(),
     getActiveSiteModal(),
+    getActiveHeroHighlight(),
   ]);
 
   return (
     <main>
       <PromotionalSiteModal modal={activeModal} />
       <Header />
-      <Hero lang={lang} />
+      <Hero lang={lang} highlight={heroHighlight} />
       <MusicSection lang={lang} singles={singles} featuredAlbum={featuredAlbum} />
       <SectionBlend from="background" to="card" />
       <ConcertsSection lang={lang} />
