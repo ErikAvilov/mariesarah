@@ -9,18 +9,22 @@ import {
   DeezerIcon,
   YouTubeIcon,
 } from "@/components/Icons";
-import { socialLinks, featuredEP } from "@/lib/data";
+import { socialLinks } from "@/lib/data";
 import { FeaturedEP } from "@/components/featured-ep";
 import { SinglesGrid } from "@/components/singles-grid";
 import { supabase } from "@/lib/supabase";
 import type { SingleRow } from "@/lib/singles";
+import type { PublicFeaturedAlbum } from "@/lib/albums";
+import { cn } from "@/lib/utils";
 
 export function MusicSection({
   lang,
   singles,
+  featuredAlbum,
 }: {
   lang: Lang;
   singles: SingleRow[];
+  featuredAlbum: PublicFeaturedAlbum | null;
 }) {
   const t = translations[lang];
   const [isAdmin, setIsAdmin] = useState(false);
@@ -41,7 +45,25 @@ export function MusicSection({
           <div className="w-16 h-1 bg-primary mx-auto" />
         </div>
 
-        <FeaturedEP ep={featuredEP} lang={lang} />
+        <div
+          className={cn(
+            "relative",
+            !featuredAlbum && "mb-16",
+            isAdmin && !featuredAlbum && "min-h-12"
+          )}
+        >
+          {isAdmin && (
+            <Link
+              href="/admin/albums"
+              className="absolute right-0 top-0 z-10 inline-flex h-12 w-12 items-center justify-center rounded-xl border border-border bg-card text-foreground text-xl font-semibold shadow-md hover:bg-muted hover:scale-105 active:scale-95 transition-all"
+              aria-label="Gérer les albums"
+              title="Albums"
+            >
+              +
+            </Link>
+          )}
+          {featuredAlbum ? <FeaturedEP album={featuredAlbum} lang={lang} /> : null}
+        </div>
 
         <div className="text-center mb-12 relative">
           {isAdmin && (

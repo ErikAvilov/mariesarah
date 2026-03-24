@@ -15,18 +15,6 @@ export interface Video {
   featured?: boolean;
 }
 
-export interface EP {
-  id: string;
-  title: string;
-  artist: string;
-  year: number;
-  genre: string;
-  image: string;
-  tracks: string[];
-  listenUrl: string;
-  allLinksUrl: string;
-}
-
 export interface PressLink {
   title: string;
   source: string;
@@ -275,23 +263,5 @@ export const pressLinks: PressLink[] = [
 ];
 
 export const tourDates: TourDate[] = [];
-
-export const featuredEP: EP = {
-  id: "dark-black-ep",
-  title: "Dark Black",
-  artist: "Marie Sarah",
-  year: 2024,
-  genre: "Pop / Soul",
-  image: "/images/dark-black.jpg",
-  tracks: [
-    "Dark Black",
-    "You Were Mine",
-    "Brand New Day",
-    "Hold Me",
-    "If I Can Dream",
-  ],
-  listenUrl: "https://open.spotify.com/intl-fr/album/2eV8dXQXxJderdQEvY3ZuC",
-  allLinksUrl: "https://lnk.to/DarkBlack",
-};
 
 export const contactEmail = "contact@mariesarah.com";
