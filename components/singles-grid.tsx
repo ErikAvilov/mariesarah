@@ -1,10 +1,18 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { Play } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { SingleRow } from "@/lib/singles";
 import { getYoutubeVideoId } from "@/lib/singles";
+import {
+  AdminCursorMenu,
+  type AdminMenuAction,
+} from "@/components/admin-cursor-menu";
+import {
+  ADMIN_EDIT_INSET_CLASS,
+  cnAdminEditWrap,
+} from "@/lib/admin-editable-hover";
 
 /** Normalise un single (Supabase peut renvoyer snake_case ou camelCase selon le contexte) */
 function normalizeSingle(s: SingleRow | Record<string, unknown>): SingleRow {
@@ -23,10 +31,17 @@ function normalizeSingle(s: SingleRow | Record<string, unknown>): SingleRow {
 
 interface SinglesGridProps {
   singles: SingleRow[];
+  isAdmin?: boolean;
 }
 
-export function SinglesGrid({ singles }: SinglesGridProps) {
+export function SinglesGrid({ singles, isAdmin = false }: SinglesGridProps) {
   const [playingId, setPlayingId] = useState<string | null>(null);
+  const [adminMenu, setAdminMenu] = useState<{
+    x: number;
+    y: number;
+    single: SingleRow;
+    videoId: string | null;
+  } | null>(null);
   const normalized = singles
     .map(normalizeSingle)
     .filter((s) => s.id)
@@ -41,6 +56,29 @@ export function SinglesGrid({ singles }: SinglesGridProps) {
     const videoId = getYoutubeVideoId(single.youtube_url);
     if (videoId) setPlayingId((prev) => (prev === single.id ? null : single.id));
   }, []);
+
+  const adminMenuActions = useMemo((): AdminMenuAction[] => {
+    if (!adminMenu) return [];
+    const vid = adminMenu.videoId;
+    const actions: AdminMenuAction[] = [
+      {
+        label: "Modifier le single",
+        href: `/admin/singles/${adminMenu.single.id}/edit`,
+      },
+    ];
+    if (vid) {
+      actions.push({
+        label: "Lire le clip",
+        onClick: () => {
+          setPlayingId((prev) =>
+            prev === adminMenu.single.id ? null : adminMenu.single.id
+          );
+        },
+      });
+    }
+    actions.push({ label: "Tous les singles", href: "/admin/singles" });
+    return actions;
+  }, [adminMenu]);
 
   if (normalized.length === 0) return null;
 
@@ -83,20 +121,37 @@ export function SinglesGrid({ singles }: SinglesGridProps) {
           return (
             <div className="col-span-2 flex justify-center items-center min-w-0">
               <div
-                className="w-full max-w-[min(100%,calc((100%-2rem)/2))]"
+                className={cn(
+                  "w-full max-w-[min(100%,calc((100%-2rem)/2))]",
+                  cnAdminEditWrap(isAdmin)
+                )}
               >
                 <button
                   type="button"
-                  onClick={() => handleCoverClick(single)}
-                  disabled={!videoId}
+                  onClick={(e) => {
+                    if (isAdmin) {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setAdminMenu({
+                        x: e.clientX,
+                        y: e.clientY,
+                        single,
+                        videoId: videoId ?? null,
+                      });
+                      return;
+                    }
+                    handleCoverClick(single);
+                  }}
+                  disabled={!isAdmin && !videoId}
                   className={cn(
                     "group relative aspect-square rounded-md overflow-hidden w-full",
                     "border border-border bg-card",
                     "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                    "transition-shadow duration-300 ease-out",
+                    "transition-[box-shadow] duration-300 ease-out",
                     "hover:shadow-xl hover:shadow-black/15",
-                    videoId && "cursor-pointer",
-                    !videoId && "cursor-not-allowed opacity-80"
+                    isAdmin && "cursor-pointer",
+                    !isAdmin && videoId && "cursor-pointer",
+                    !videoId && !isAdmin && "cursor-not-allowed opacity-80"
                   )}
                   style={{ boxShadow: "0 4px 14px rgba(0,0,0,0.1)" }}
                   aria-label={videoId ? `Lire ${single.title}` : single.title}
@@ -114,14 +169,17 @@ export function SinglesGrid({ singles }: SinglesGridProps) {
                       (e.target as HTMLImageElement).style.display = "none";
                     }}
                   />
+                  {isAdmin ? (
+                    <span className={ADMIN_EDIT_INSET_CLASS} aria-hidden />
+                  ) : null}
                   <span
-                    className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/10"
+                    className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/10 z-[2]"
                     aria-hidden
                   />
                   {videoId && (
                     <span
                       className={cn(
-                        "absolute inset-0 flex items-center justify-center transition-opacity duration-300",
+                        "absolute inset-0 z-[3] flex items-center justify-center transition-opacity duration-300",
                         "opacity-0 group-hover:opacity-100"
                       )}
                     >
@@ -143,20 +201,37 @@ export function SinglesGrid({ singles }: SinglesGridProps) {
           return (
             <div
               key={single.id}
-              className="flex justify-center items-center min-w-0"
+              className={cn(
+                "flex justify-center items-center min-w-0",
+                cnAdminEditWrap(isAdmin)
+              )}
             >
               <button
                 type="button"
-                onClick={() => handleCoverClick(single)}
-                disabled={!videoId}
+                onClick={(e) => {
+                  if (isAdmin) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setAdminMenu({
+                      x: e.clientX,
+                      y: e.clientY,
+                      single,
+                      videoId: videoId ?? null,
+                    });
+                    return;
+                  }
+                  handleCoverClick(single);
+                }}
+                disabled={!isAdmin && !videoId}
                 className={cn(
                   "group relative aspect-square rounded-md overflow-hidden w-full",
                   "border border-border bg-card",
                   "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                  "transition-shadow duration-300 ease-out",
+                  "transition-[box-shadow] duration-300 ease-out",
                   "hover:shadow-xl hover:shadow-black/15",
-                  videoId && "cursor-pointer",
-                  !videoId && "cursor-not-allowed opacity-80"
+                  isAdmin && "cursor-pointer",
+                  !isAdmin && videoId && "cursor-pointer",
+                  !videoId && !isAdmin && "cursor-not-allowed opacity-80"
                 )}
                 style={{ boxShadow: "0 4px 14px rgba(0,0,0,0.1)" }}
                 aria-label={videoId ? `Lire ${single.title}` : single.title}
@@ -174,14 +249,17 @@ export function SinglesGrid({ singles }: SinglesGridProps) {
                     (e.target as HTMLImageElement).style.display = "none";
                   }}
                 />
+                {isAdmin ? (
+                  <span className={ADMIN_EDIT_INSET_CLASS} aria-hidden />
+                ) : null}
                 <span
-                  className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/10"
+                  className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/10 z-[2]"
                   aria-hidden
                 />
                 {videoId && (
                   <span
                     className={cn(
-                      "absolute inset-0 flex items-center justify-center transition-opacity duration-300",
+                      "absolute inset-0 z-[3] flex items-center justify-center transition-opacity duration-300",
                       "opacity-0 group-hover:opacity-100"
                     )}
                   >
@@ -198,6 +276,16 @@ export function SinglesGrid({ singles }: SinglesGridProps) {
           );
         })}
       </div>
+
+      {isAdmin ? (
+        <AdminCursorMenu
+          open={!!adminMenu}
+          x={adminMenu?.x ?? 0}
+          y={adminMenu?.y ?? 0}
+          onClose={() => setAdminMenu(null)}
+          actions={adminMenuActions}
+        />
+      ) : null}
     </div>
   );
 }

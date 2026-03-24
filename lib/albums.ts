@@ -79,6 +79,7 @@ export type AlbumUpdate = Partial<AlbumInsert>;
 
 /** Données sérialisables pour la section album mise en avant (page publique) */
 export type PublicFeaturedAlbum = {
+  id: string;
   badgeLabel: string;
   title: string;
   artistName: string;
@@ -138,6 +139,7 @@ export async function getPublicFeaturedAlbum(): Promise<PublicFeaturedAlbum | nu
   if (tErr) throw tErr;
 
   return {
+    id: row.id,
     badgeLabel: row.badge_label,
     title: row.title,
     artistName: row.artist_name,

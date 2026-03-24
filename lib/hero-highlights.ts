@@ -32,6 +32,8 @@ export interface HeroHighlightRow {
 }
 
 export type ActiveHeroHighlightPayload = {
+  /** Présent quand le hero vient de la BDD (édition admin) */
+  id?: string;
   eyebrow: string;
   title: string;
   artist_name: string;
@@ -73,7 +75,7 @@ export async function getActiveHeroHighlight(): Promise<ActiveHeroHighlightPaylo
   const { data, error } = await supabase
     .from("hero_highlights")
     .select(
-      "eyebrow, title, artist_name, cta_label, target_url, background_image_url"
+      "id, eyebrow, title, artist_name, cta_label, target_url, background_image_url"
     )
     .eq("is_active", true)
     .order("display_order", { ascending: true })
@@ -88,6 +90,7 @@ export async function getActiveHeroHighlight(): Promise<ActiveHeroHighlightPaylo
   if (!target || !bg) return null;
 
   return {
+    id: String(data.id ?? ""),
     eyebrow: String(data.eyebrow ?? ""),
     title: String(data.title ?? ""),
     artist_name: String(data.artist_name ?? ""),

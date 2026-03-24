@@ -8,6 +8,9 @@ import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { InstagramIcon, FacebookIcon } from "@/components/Icons";
 import { socialLinks } from "@/lib/data";
+import { AdminCursorMenu } from "@/components/admin-cursor-menu";
+import { cnAdminEditSurface } from "@/lib/admin-editable-hover";
+import { cn } from "@/lib/utils";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -18,6 +21,11 @@ export function ConcertsSection({ lang }: { lang: Lang }) {
   const [pastConcerts, setPastConcerts] = useState<ConcertRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [adminMenu, setAdminMenu] = useState<{
+    x: number;
+    y: number;
+    concertId: string;
+  } | null>(null);
 
   useEffect(() => {
     getConcerts()
@@ -110,7 +118,7 @@ export function ConcertsSection({ lang }: { lang: Lang }) {
           {isAdmin && (
             <Link
               href="/admin/concerts/new"
-              className="absolute right-0 top-0 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground text-2xl font-semibold shadow-md hover:bg-primary/90 hover:scale-105 active:scale-95 transition-all"
+              className="absolute right-0 top-0 z-10 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground text-2xl font-semibold shadow-md transition-all hover:bg-primary/90 hover:scale-105 active:scale-95"
               aria-label="Ajouter un concert"
             >
               +
@@ -133,13 +141,21 @@ export function ConcertsSection({ lang }: { lang: Lang }) {
                   {paginatedConcerts.map((concert) => {
                     if (!isConcertUpcoming(concert)) return null;
                     return (
-                      <ConcertRow
+                      <ConcertListRow
                         key={concert.id}
                         concert={concert}
                         lang={lang}
                         formatDate={formatDate}
                         t={t}
                         isPast={false}
+                        isAdmin={isAdmin}
+                        onAdminOpenMenu={(e, c) =>
+                          setAdminMenu({
+                            x: e.clientX,
+                            y: e.clientY,
+                            concertId: c.id,
+                          })
+                        }
                       />
                     );
                   })}
@@ -156,13 +172,21 @@ export function ConcertsSection({ lang }: { lang: Lang }) {
                   {paginatedConcerts.map((concert) => {
                     if (isConcertUpcoming(concert)) return null;
                     return (
-                      <ConcertRow
+                      <ConcertListRow
                         key={concert.id}
                         concert={concert}
                         lang={lang}
                         formatDate={formatDate}
                         t={t}
                         isPast={true}
+                        isAdmin={isAdmin}
+                        onAdminOpenMenu={(e, c) =>
+                          setAdminMenu({
+                            x: e.clientX,
+                            y: e.clientY,
+                            concertId: c.id,
+                          })
+                        }
                       />
                     );
                   })}
@@ -238,27 +262,71 @@ export function ConcertsSection({ lang }: { lang: Lang }) {
             </div>
           </div>
         )}
+
+        {isAdmin ? (
+          <AdminCursorMenu
+            open={!!adminMenu}
+            x={adminMenu?.x ?? 0}
+            y={adminMenu?.y ?? 0}
+            onClose={() => setAdminMenu(null)}
+            actions={
+              adminMenu
+                ? [
+                    {
+                      label: "Modifier ce concert",
+                      href: `/admin/concerts/${adminMenu.concertId}/edit`,
+                    },
+                    { label: "Tous les concerts", href: "/admin/concerts" },
+                    { label: "Nouveau concert", href: "/admin/concerts/new" },
+                  ]
+                : []
+            }
+          />
+        ) : null}
       </div>
     </section>
   );
 }
 
-interface ConcertRowProps {
+interface ConcertListRowProps {
   concert: ConcertRow;
   lang: Lang;
   formatDate: (date: string, lang: Lang) => string;
   t: (typeof translations)["fr"];
   isPast: boolean;
+  isAdmin?: boolean;
+  onAdminOpenMenu?: (e: React.MouseEvent, concert: ConcertRow) => void;
 }
 
-function ConcertRow({ concert, lang, formatDate, t, isPast }: ConcertRowProps) {
+function ConcertListRow({
+  concert,
+  lang,
+  formatDate,
+  t,
+  isPast,
+  isAdmin = false,
+  onAdminOpenMenu,
+}: ConcertListRowProps) {
   const ticketButtonText = concert.ticket_label ?? t.tour.tickets;
   const showRight =
     !isPast &&
     (concert.ticket_url != null || concert.ticket_label != null);
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between p-6 bg-background rounded-lg border border-border">
+    <div
+      className={cn(
+        "flex flex-col sm:flex-row sm:items-center justify-between p-6 bg-background rounded-lg border border-border",
+        cnAdminEditSurface(isAdmin)
+      )}
+      onClick={
+        isAdmin && onAdminOpenMenu
+          ? (e) => {
+              if ((e.target as HTMLElement).closest("a, button")) return;
+              onAdminOpenMenu(e, concert);
+            }
+          : undefined
+      }
+    >
       <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8">
         <div className="font-sans text-primary font-bold text-lg min-w-fit">
           {formatDate(concert.event_date, lang)}
@@ -280,6 +348,7 @@ function ConcertRow({ concert, lang, formatDate, t, isPast }: ConcertRowProps) {
               href={concert.ticket_url}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
             >
               {ticketButtonText}
             </Link>

@@ -12,6 +12,8 @@ import {
 import { socialLinks } from "@/lib/data";
 import { FeaturedEP } from "@/components/featured-ep";
 import { SinglesGrid } from "@/components/singles-grid";
+import { AdminCursorMenu } from "@/components/admin-cursor-menu";
+import { cnAdminEditSurface } from "@/lib/admin-editable-hover";
 import { supabase } from "@/lib/supabase";
 import type { SingleRow } from "@/lib/singles";
 import type { PublicFeaturedAlbum } from "@/lib/albums";
@@ -28,6 +30,10 @@ export function MusicSection({
 }) {
   const t = translations[lang];
   const [isAdmin, setIsAdmin] = useState(false);
+  const [emptyAlbumMenu, setEmptyAlbumMenu] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -45,31 +51,45 @@ export function MusicSection({
           <div className="w-16 h-1 bg-primary mx-auto" />
         </div>
 
-        <div
-          className={cn(
-            "relative",
-            !featuredAlbum && "mb-16",
-            isAdmin && !featuredAlbum && "min-h-12"
-          )}
-        >
+        <div className={cn("relative", !featuredAlbum && "mb-16")}>
           {isAdmin && (
             <Link
               href="/admin/albums"
-              className="absolute right-0 top-0 z-10 inline-flex h-12 w-12 items-center justify-center rounded-xl border border-border bg-card text-foreground text-xl font-semibold shadow-md hover:bg-muted hover:scale-105 active:scale-95 transition-all"
+              className="absolute right-0 top-0 z-10 inline-flex h-12 w-12 items-center justify-center rounded-xl border border-border bg-card text-foreground text-xl font-semibold shadow-md transition-all hover:bg-muted hover:scale-105 active:scale-95"
               aria-label="Gérer les albums"
               title="Albums"
             >
               +
             </Link>
           )}
-          {featuredAlbum ? <FeaturedEP album={featuredAlbum} lang={lang} /> : null}
+          {featuredAlbum ? (
+            <FeaturedEP album={featuredAlbum} lang={lang} isAdmin={isAdmin} />
+          ) : isAdmin ? (
+            <button
+              type="button"
+              className={cn(
+                "mb-16 w-full rounded-xl border-2 border-dashed border-primary/35 bg-card/40 px-8 py-14 text-center",
+                cnAdminEditSurface(true)
+              )}
+              onClick={(e) =>
+                setEmptyAlbumMenu({ x: e.clientX, y: e.clientY })
+              }
+            >
+              <p className="font-montserrat text-sm font-semibold uppercase tracking-widest text-foreground">
+                Aucun album mis en avant
+              </p>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Cliquez pour gérer ou créer un album
+              </p>
+            </button>
+          ) : null}
         </div>
 
         <div className="text-center mb-12 relative">
           {isAdmin && (
             <Link
               href="/admin/singles/new"
-              className="absolute right-0 top-0 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground text-2xl font-semibold shadow-md hover:bg-primary/90 hover:scale-105 active:scale-95 transition-all"
+              className="absolute right-0 top-0 z-10 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground text-2xl font-semibold shadow-md transition-all hover:bg-primary/90 hover:scale-105 active:scale-95"
               aria-label="Ajouter un single"
             >
               +
@@ -83,9 +103,22 @@ export function MusicSection({
 
         {singles.length > 0 && (
           <div className="w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-visible">
-            <SinglesGrid singles={singles} />
+            <SinglesGrid singles={singles} isAdmin={isAdmin} />
           </div>
         )}
+
+        {isAdmin ? (
+          <AdminCursorMenu
+            open={!!emptyAlbumMenu}
+            x={emptyAlbumMenu?.x ?? 0}
+            y={emptyAlbumMenu?.y ?? 0}
+            onClose={() => setEmptyAlbumMenu(null)}
+            actions={[
+              { label: "Albums (liste)", href: "/admin/albums" },
+              { label: "Nouvel album", href: "/admin/albums/new" },
+            ]}
+          />
+        ) : null}
 
         <div className="mt-16 flex flex-wrap items-center justify-center gap-6">
           <Link

@@ -1,21 +1,49 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Lang, translations } from "@/lib/translations";
 import type { PublicFeaturedAlbum } from "@/lib/albums";
+import { AdminCursorMenu } from "@/components/admin-cursor-menu";
+import { cnAdminEditSurface } from "@/lib/admin-editable-hover";
+import { cn } from "@/lib/utils";
 
 interface FeaturedEPProps {
   album: PublicFeaturedAlbum;
   lang: Lang;
+  isAdmin?: boolean;
 }
 
-export function FeaturedEP({ album, lang }: FeaturedEPProps) {
+export function FeaturedEP({ album, lang, isAdmin = false }: FeaturedEPProps) {
   const t = translations[lang];
   const badgeText =
     album.badgeLabel.trim() !== "" ? album.badgeLabel : t.music.premierEP;
 
+  const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
+
   return (
-    <div className="mb-16 font-montserrat uppercase">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-card border border-border rounded-lg overflow-hidden p-8">
+    <div
+      className={cn(
+        "mb-16 rounded-xl font-montserrat uppercase",
+        cnAdminEditSurface(isAdmin)
+      )}
+      onClick={
+        isAdmin
+          ? (e) => {
+              if ((e.target as HTMLElement).closest("a")) return;
+              setMenu({ x: e.clientX, y: e.clientY });
+            }
+          : undefined
+      }
+    >
+      <div
+        className={cn(
+          "grid grid-cols-1 md:grid-cols-2 gap-8 bg-card border border-border rounded-lg overflow-hidden p-8 transition-[border-color,box-shadow] duration-200",
+          isAdmin &&
+            "hover:border-primary hover:shadow-[inset_0_0_80px_hsl(var(--primary)/0.08)]"
+        )}
+      >
         <div className="flex items-center justify-center">
           <div className="relative w-full aspect-square max-w-xs md:max-w-none">
             <Image
@@ -91,6 +119,22 @@ export function FeaturedEP({ album, lang }: FeaturedEPProps) {
           </div>
         </div>
       </div>
+
+      {isAdmin ? (
+        <AdminCursorMenu
+          open={!!menu}
+          x={menu?.x ?? 0}
+          y={menu?.y ?? 0}
+          onClose={() => setMenu(null)}
+          actions={[
+            {
+              label: "Modifier l’album",
+              href: `/admin/albums/${album.id}/edit`,
+            },
+            { label: "Tous les albums", href: "/admin/albums" },
+          ]}
+        />
+      ) : null}
     </div>
   );
 }
