@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { AlbumInsert, AlbumRow } from "@/lib/albums";
 import { isManagedImageUrl } from "@/lib/managed-image-url";
+import { uploadMediaImage, removePreviousAdminImage } from "@/lib/storage-media";
 
 export type TrackLine = { key: string; track_number: number; title: string };
 
@@ -147,25 +148,15 @@ export function AlbumForm({
     let coverUrl = form.cover_image_url;
 
     if (imageFile) {
-      const formData = new FormData();
-      formData.set("file", imageFile);
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        setUploadError(data.error ?? "Erreur lors de l’upload.");
+      const result = await uploadMediaImage(imageFile, "albums");
+      if ("error" in result) {
+        setUploadError(result.error);
         return;
       }
-      coverUrl = data.url;
+      coverUrl = result.publicUrl;
       const previousCover = initialAlbum?.cover_image_url;
       if (isEdit && isManagedImageUrl(previousCover)) {
-        await fetch("/api/images/delete", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url: previousCover }),
-        });
+        await removePreviousAdminImage(previousCover);
       }
     }
 

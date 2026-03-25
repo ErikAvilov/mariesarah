@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { deleteSingleWithImage, type SingleRow } from "@/lib/singles";
+import { removePreviousAdminImage } from "@/lib/storage-media";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -38,6 +39,8 @@ export function AdminSinglesListClient({
 
   async function handleConfirmDelete(id: string) {
     setDeleting(true);
+    const row = initialItems.find((s) => s.id === id);
+    await removePreviousAdminImage(row?.image_url);
     const { error: err } = await deleteSingleWithImage(id);
     setDeleting(false);
     if (err) {

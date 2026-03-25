@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { deleteAlbum, type AlbumRow } from "@/lib/albums";
+import { removePreviousAdminImage } from "@/lib/storage-media";
 import { Button } from "@/components/ui/button";
 import { Plus, Star } from "lucide-react";
 import {
@@ -38,6 +39,8 @@ export function AdminAlbumsListClient({
 
   async function handleConfirmDelete(id: string) {
     setDeleting(true);
+    const row = initialItems.find((a) => a.id === id);
+    await removePreviousAdminImage(row?.cover_image_url);
     const { error: err } = await deleteAlbum(id);
     setDeleting(false);
     if (err) {

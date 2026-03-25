@@ -9,6 +9,7 @@ import {
   updateHeroHighlight,
   type HeroHighlightRow,
 } from "@/lib/hero-highlights";
+import { removePreviousAdminImage } from "@/lib/storage-media";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import {
@@ -44,6 +45,8 @@ export function AdminHeroHighlightsListClient({
 
   async function handleConfirmDelete(id: string) {
     setDeleting(true);
+    const row = initialItems.find((h) => h.id === id);
+    await removePreviousAdminImage(row?.background_image_url);
     const { error: err } = await deleteHeroHighlight(id);
     setDeleting(false);
     if (err) {

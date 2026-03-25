@@ -9,6 +9,7 @@ import {
   updateSiteModal,
   type SiteModalRow,
 } from "@/lib/site-modals";
+import { removePreviousAdminImage } from "@/lib/storage-media";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import {
@@ -44,6 +45,8 @@ export function AdminSiteModalsListClient({
 
   async function handleConfirmDelete(id: string) {
     setDeleting(true);
+    const row = initialItems.find((m) => m.id === id);
+    await removePreviousAdminImage(row?.image_url);
     const { error: err } = await deleteSiteModal(id);
     setDeleting(false);
     if (err) {

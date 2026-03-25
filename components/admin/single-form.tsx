@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import type { SingleRow, SingleInsert } from "@/lib/singles";
 import { isManagedImageUrl } from "@/lib/managed-image-url";
+import { uploadMediaImage, removePreviousAdminImage } from "@/lib/storage-media";
 
 function OrderPreview({
   position,
@@ -143,25 +144,14 @@ export function SingleForm({
     let imageUrl = form.image_url;
 
     if (imageFile) {
-      const formData = new FormData();
-      formData.set("file", imageFile);
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        setUploadError(data.error ?? "Erreur lors de l’upload.");
+      const result = await uploadMediaImage(imageFile, "singles");
+      if ("error" in result) {
+        setUploadError(result.error);
         return;
       }
-      imageUrl = data.url;
-      // En édition : supprimer l'ancienne image du disque si c'était un fichier local
+      imageUrl = result.publicUrl;
       if (isEdit && isManagedImageUrl(initialValues.image_url)) {
-        await fetch("/api/images/delete", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url: initialValues.image_url }),
-        });
+        await removePreviousAdminImage(initialValues.image_url);
       }
     }
 

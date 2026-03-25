@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { HeroHighlightInsert, HeroHighlightRow } from "@/lib/hero-highlights";
 import { isManagedImageUrl } from "@/lib/managed-image-url";
+import { uploadMediaImage, removePreviousAdminImage } from "@/lib/storage-media";
 
 export type HeroHighlightFormValues = HeroHighlightInsert;
 
@@ -95,24 +96,14 @@ export function HeroHighlightForm({
     let bgUrl = form.background_image_url;
 
     if (imageFile) {
-      const formData = new FormData();
-      formData.set("file", imageFile);
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        setUploadError(data.error ?? "Erreur lors de l’upload.");
+      const result = await uploadMediaImage(imageFile, "hero");
+      if ("error" in result) {
+        setUploadError(result.error);
         return;
       }
-      bgUrl = data.url;
+      bgUrl = result.publicUrl;
       if (isEdit && isManagedImageUrl(initialValues.background_image_url)) {
-        await fetch("/api/images/delete", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url: initialValues.background_image_url }),
-        });
+        await removePreviousAdminImage(initialValues.background_image_url);
       }
     }
 

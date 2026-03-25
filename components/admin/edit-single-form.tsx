@@ -10,6 +10,7 @@ import {
   type SingleInsert,
 } from "@/lib/singles";
 import { SingleForm } from "@/components/admin/single-form";
+import { removePreviousAdminImage } from "@/lib/storage-media";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -44,6 +45,7 @@ export function EditSingleForm({ item }: { item: SingleRow }) {
 
   async function handleConfirmDelete() {
     setDeleting(true);
+    await removePreviousAdminImage(item.image_url);
     const { error: err } = await deleteSingleWithImage(item.id);
     setDeleting(false);
     if (err) {

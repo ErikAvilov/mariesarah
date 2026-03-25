@@ -1,13 +1,31 @@
--- Images uploadées depuis l’admin (prod Vercel : pas d’écriture dans public/).
+-- Bucket Storage public pour les uploads admin (albums, singles, hero, modals).
 --
--- 1. Supabase Dashboard → Storage → New bucket
---    - Name : site-uploads  (ou la valeur de SUPABASE_STORAGE_BUCKET)
---    - Public bucket : ON  (lecture directe par URL publique)
+-- 1) Dashboard Supabase → Storage → New bucket
+--    - Name: media
+--    - Public bucket: ON
 --
--- 2. Vercel → Environment Variables
---    - SUPABASE_SERVICE_ROLE_KEY = (Project Settings → API → service_role, SECRET, jamais côté client)
---    - NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET = site-uploads  (même nom que le bucket ; défaut code = site-uploads)
---    - Optionnel : SUPABASE_STORAGE_BUCKET = site-uploads  (serveur uniquement, sinon la clé publique ci-dessus suffit)
+-- 2) Variables d’environnement (Next / Vercel)
+--    - NEXT_PUBLIC_SUPABASE_URL
+--    - NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY  (clé anon / publishable)
+--    - Optionnel: NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET=media  (défaut dans le code = media)
 --
--- La base (albums, singles, hero, modals) ne stocke que l’URL complète renvoyée par /api/upload.
--- En local sans SUPABASE_SERVICE_ROLE_KEY, les fichiers vont dans public/images/ comme avant.
+-- 3) Politiques (Storage → Policies), pour que les admins connectés puissent uploader / supprimer.
+--    Remplacez "media" si vous utilisez un autre nom de bucket.
+--
+-- Lecture publique (affichage site)
+-- create policy "Public read media"
+-- on storage.objects for select
+-- using (bucket_id = 'media');
+--
+-- Upload (session Supabase Auth = authenticated)
+-- create policy "Authenticated insert media"
+-- on storage.objects for insert
+-- with check (bucket_id = 'media' and auth.role() = 'authenticated');
+--
+-- Suppression lors du remplacement d’une image
+-- create policy "Authenticated delete media"
+-- on storage.objects for delete
+-- using (bucket_id = 'media' and auth.role() = 'authenticated');
+--
+-- Les champs texte en base (cover_image_url, image_url, etc.) stockent l’URL publique
+-- renvoyée par getPublicUrl après upload client (dossiers albums/, singles/, hero/, modals/).
