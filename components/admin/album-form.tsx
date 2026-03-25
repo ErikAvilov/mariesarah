@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { AlbumInsert, AlbumRow } from "@/lib/albums";
+import { isManagedImageUrl } from "@/lib/managed-image-url";
 
 export type TrackLine = { key: string; track_number: number; title: string };
 
@@ -158,11 +159,12 @@ export function AlbumForm({
         return;
       }
       coverUrl = data.url;
-      if (isEdit && initialAlbum?.cover_image_url?.startsWith("/images/")) {
+      const previousCover = initialAlbum?.cover_image_url;
+      if (isEdit && isManagedImageUrl(previousCover)) {
         await fetch("/api/images/delete", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url: initialAlbum.cover_image_url }),
+          body: JSON.stringify({ url: previousCover }),
         });
       }
     }

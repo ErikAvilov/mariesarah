@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import type { SingleRow, SingleInsert } from "@/lib/singles";
+import { isManagedImageUrl } from "@/lib/managed-image-url";
 
 function OrderPreview({
   position,
@@ -155,7 +156,7 @@ export function SingleForm({
       }
       imageUrl = data.url;
       // En édition : supprimer l'ancienne image du disque si c'était un fichier local
-      if (isEdit && initialValues.image_url?.startsWith("/images/")) {
+      if (isEdit && isManagedImageUrl(initialValues.image_url)) {
         await fetch("/api/images/delete", {
           method: "POST",
           headers: { "Content-Type": "application/json" },

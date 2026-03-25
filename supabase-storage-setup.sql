@@ -1,0 +1,13 @@
+-- Images uploadées depuis l’admin (prod Vercel : pas d’écriture dans public/).
+--
+-- 1. Supabase Dashboard → Storage → New bucket
+--    - Name : site-uploads  (ou la valeur de SUPABASE_STORAGE_BUCKET)
+--    - Public bucket : ON  (lecture directe par URL publique)
+--
+-- 2. Vercel → Environment Variables
+--    - SUPABASE_SERVICE_ROLE_KEY = (Project Settings → API → service_role, SECRET, jamais côté client)
+--    - NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET = site-uploads  (même nom que le bucket ; défaut code = site-uploads)
+--    - Optionnel : SUPABASE_STORAGE_BUCKET = site-uploads  (serveur uniquement, sinon la clé publique ci-dessus suffit)
+--
+-- La base (albums, singles, hero, modals) ne stocke que l’URL complète renvoyée par /api/upload.
+-- En local sans SUPABASE_SERVICE_ROLE_KEY, les fichiers vont dans public/images/ comme avant.

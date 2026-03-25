@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import type { ActiveSiteModalPayload } from "@/lib/site-modals";
+import { isNextImageOptimizable } from "@/lib/next-image-src";
 
 const DELAY_SECONDS = 3;
 
@@ -47,7 +48,7 @@ export function PromotionalSiteModal({
           ? `${imageClassName} cursor-pointer transition-transform hover:scale-[1.02]`
           : imageClassName
       }
-      priority
+      unoptimized={!isNextImageOptimizable(modal.image_url)}
     />
   );
 

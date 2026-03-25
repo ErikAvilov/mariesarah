@@ -8,6 +8,7 @@ import type { PublicFeaturedAlbum } from "@/lib/albums";
 import { AdminCursorMenu } from "@/components/admin-cursor-menu";
 import { cnAdminEditSurface } from "@/lib/admin-editable-hover";
 import { cn } from "@/lib/utils";
+import { isNextImageOptimizable } from "@/lib/next-image-src";
 
 interface FeaturedEPProps {
   album: PublicFeaturedAlbum;
@@ -54,8 +55,9 @@ export function FeaturedEP({ album, lang, isAdmin = false }: FeaturedEPProps) {
                   : `${album.title} — ${album.artistName}, album cover`
               }
               fill
+              sizes="(max-width: 768px) 100vw, 50vw"
               className="object-cover rounded-lg"
-              priority
+              unoptimized={!isNextImageOptimizable(album.coverImageUrl)}
             />
           </div>
         </div>

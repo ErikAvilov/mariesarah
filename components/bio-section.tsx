@@ -13,8 +13,10 @@ export function BioSection({ lang }: { lang: Lang }) {
           <div className="relative aspect-[3/4] rounded-lg overflow-hidden">
             <Image
               src="/images/portrait.jpg"
+              loading="lazy"
               alt="Marie Sarah"
               fill
+              sizes="(max-width: 1024px) 100vw, 50vw"
               className="object-cover object-top"
             />
           </div>

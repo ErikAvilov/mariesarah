@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { HeroHighlightInsert, HeroHighlightRow } from "@/lib/hero-highlights";
+import { isManagedImageUrl } from "@/lib/managed-image-url";
 
 export type HeroHighlightFormValues = HeroHighlightInsert;
 
@@ -106,7 +107,7 @@ export function HeroHighlightForm({
         return;
       }
       bgUrl = data.url;
-      if (isEdit && initialValues.background_image_url?.startsWith("/images/")) {
+      if (isEdit && isManagedImageUrl(initialValues.background_image_url)) {
         await fetch("/api/images/delete", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
