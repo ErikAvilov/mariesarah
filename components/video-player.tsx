@@ -73,8 +73,14 @@ export function VideoPlayer({
                 "object-cover transition-transform duration-500 ease-out",
                 isHovered && "scale-105"
               )}
-              priority={featured}
-              sizes={featured ? "100vw" : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"}
+              priority={false}
+              fetchPriority="low"
+              sizes={
+                featured
+                  ? "(max-width: 1024px) 100vw, min(896px, 50vw)"
+                  : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              }
+              quality={75}
             />
           )}
           {!isInView && (

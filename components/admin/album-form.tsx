@@ -255,7 +255,7 @@ export function AlbumForm({
             id="album-badge"
             value={form.badge_label}
             onChange={(e) => setForm((f) => ({ ...f, badge_label: e.target.value }))}
-            placeholder="Laisser vide pour « Premier EP » sur le site"
+            placeholder="Laissez vide pour afficher « Album » sur le site"
           />
         </div>
       </div>

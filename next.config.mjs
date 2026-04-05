@@ -11,6 +11,8 @@ const nextConfig = {
         pathname: "/storage/v1/object/public/**",
       },
     ],
+    /** Réponses `/_next/image` : moins de recalculs côté serveur / CDN */
+    minimumCacheTTL: 60 * 60 * 24 * 7,
   },
   async headers() {
     return [
@@ -19,7 +21,7 @@ const nextConfig = {
         headers: [
           {
             key: "Cache-Control",
-            value: "no-cache, no-store, must-revalidate",
+            value: "public, max-age=604800, stale-while-revalidate=2592000",
           },
         ],
       },

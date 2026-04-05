@@ -5,7 +5,8 @@ import type { ActiveHeroHighlightPayload } from "@/lib/hero-highlights";
 import { HeroClient, type HeroDisplayContent } from "@/components/hero-client";
 import { isNextImageOptimizable } from "@/lib/next-image-src";
 
-const FALLBACK_BG = "/images/portrait-test.png";
+/** JPG optimisé par next/image ; éviter le PNG ~2,3 Mo (portrait-test) en fallback LCP */
+const FALLBACK_BG = "/images/portrait.jpg";
 
 function resolveHeroContent(
   lang: Lang,
@@ -58,7 +59,7 @@ export function Hero({
           priority
           fetchPriority="high"
           sizes="100vw"
-          quality={useOptimizer ? 80 : undefined}
+          quality={useOptimizer ? 72 : undefined}
           unoptimized={!useOptimizer}
           className="object-cover object-center"
         />

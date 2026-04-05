@@ -159,8 +159,9 @@ export function SinglesGrid({ singles, isAdmin = false }: SinglesGridProps) {
                   <img
                     src={single.image_url || ""}
                     alt={`Marie Sarah — ${single.title}, pochette du single`}
-                    loading="eager"
+                    loading="lazy"
                     decoding="async"
+                    fetchPriority="low"
                     className={cn(
                       "absolute inset-0 w-full h-full object-cover transition-transform duration-300 ease-out origin-center",
                       "group-hover:scale-[1.05]"

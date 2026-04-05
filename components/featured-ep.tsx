@@ -19,7 +19,7 @@ interface FeaturedEPProps {
 export function FeaturedEP({ album, lang, isAdmin = false }: FeaturedEPProps) {
   const t = translations[lang];
   const badgeText =
-    album.badgeLabel.trim() !== "" ? album.badgeLabel : t.music.premierEP;
+    album.badgeLabel.trim() !== "" ? album.badgeLabel : album.releaseType;
 
   const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
 
@@ -55,8 +55,9 @@ export function FeaturedEP({ album, lang, isAdmin = false }: FeaturedEPProps) {
                   : `${album.title} — ${album.artistName}, album cover`
               }
               fill
-              sizes="(max-width: 768px) 100vw, 50vw"
+              sizes="(max-width: 768px) min(100vw, 320px), min(50vw, 560px)"
               className="object-cover rounded-lg"
+              quality={isNextImageOptimizable(album.coverImageUrl) ? 75 : undefined}
               unoptimized={!isNextImageOptimizable(album.coverImageUrl)}
             />
           </div>
@@ -64,9 +65,11 @@ export function FeaturedEP({ album, lang, isAdmin = false }: FeaturedEPProps) {
 
         <div className="flex flex-col justify-between">
           <div>
-            <div className="inline-block bg-primary/10 text-primary px-3 py-1 rounded-full text-[10px] font-semibold tracking-wide mb-4">
-              {badgeText}
-            </div>
+            {badgeText.trim() !== "" ? (
+              <div className="inline-block bg-primary/10 text-primary px-3 py-1 rounded-full text-[10px] font-semibold tracking-wide mb-4">
+                {badgeText}
+              </div>
+            ) : null}
             <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-2 tracking-tight">
               {album.title}
             </h3>
