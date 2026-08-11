@@ -30,7 +30,6 @@ export const translations = {
       tour: "Concerts",
       bio: "Biographie",
       contact: "Contact",
-      shop: "Shop",
     },
     hero: {
       newRelease: "Nouveau single disponible",
@@ -108,7 +107,6 @@ export const translations = {
       tour: "Tour",
       bio: "Bio",
       contact: "Contact",
-      shop: "Shop",
     },
     hero: {
       newRelease: "New Release",
@@ -190,9 +188,6 @@ export const socialLinks = {
   facebook: "https://www.facebook.com/p/Marie-Sarah-Officiel-61556176504399/",
   linktree: "https://lnk.to/DarkBlack",
 } as const;
-
-/** URL du shop (à définir quand le site sera en ligne) */
-export const shopUrl = "https://shop.mariesarah.com";
 
 export const youtubeVideos: Video[] = [
     {

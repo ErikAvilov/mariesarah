@@ -12,7 +12,7 @@ import {
   InstagramIcon,
   FacebookIcon,
 } from "@/components/Icons";
-import { socialLinks, shopUrl } from "@/lib/data";
+import { socialLinks } from "@/lib/data";
 import { supabase } from "@/lib/supabase";
 
 export function Header() {
@@ -61,15 +61,6 @@ export function Header() {
                 {link.label}
               </a>
             ))}
-            <Link
-              href={shopUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="relative px-4 py-2.5 text-sm font-medium uppercase tracking-widest border-2 border-foreground/80 text-foreground overflow-hidden transition-all duration-300 hover:border-primary hover:text-white hover:scale-[1.02] active:scale-[0.98] group"
-            >
-              <span className="relative z-10">{t.nav.shop}</span>
-              <span className="absolute inset-0 z-0 bg-primary scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300 ease-out" />
-            </Link>
             {showAdminLink && (
               <Link
                 href="/admin"
@@ -176,16 +167,6 @@ export function Header() {
                 {link.label}
               </a>
             ))}
-            <Link
-              href={shopUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => setMobileMenuOpen(false)}
-              className="relative mt-2 px-6 py-3 text-sm font-medium uppercase tracking-widest border-2 border-foreground/80 text-foreground overflow-hidden transition-all duration-300 hover:border-primary hover:text-white hover:scale-[1.02] active:scale-[0.98] group"
-            >
-              <span className="relative z-10">{t.nav.shop}</span>
-              <span className="absolute inset-0 z-0 bg-primary scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300 ease-out" />
-            </Link>
             {showAdminLink && (
               <Link
                 href="/admin"
